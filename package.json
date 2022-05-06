@@ -1,5 +1,5 @@
 {
-  "name": "csijs",
+  "name": "@longfor/mara",
   "version": "1.0.10",
   "description": "csijs是一个前端日志系统，它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
   "main": "./dist/csijs.es.js",
@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "rollup -c -w",
+    "start": "rollup -c -w --host 0.0.0.0",
     "build": "rm -rf ./dist && rollup -c",
     "dev": "serve",
     "lint": "eslint ./src",
@@ -37,10 +37,14 @@
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",
     "rollup": "^2.47.0",
+    "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
     "rollup-plugin-terser": "^7.0.2"
   },
   "dependencies": {
-    "excellentexport": "^3.7.0"
+    "clipboard": "^2.0.11",
+    "excellentexport": "^3.7.0",
+    "hammerjs": "^2.0.8",
+    "toastify-js": "^1.11.2"
   }
 }

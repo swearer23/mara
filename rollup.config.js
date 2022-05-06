@@ -4,6 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
 import { terser } from "rollup-plugin-terser";
 import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload'
 
 const config = {
   input: {
@@ -24,6 +25,7 @@ const config = {
     tryCatchDeoptimization: false,
   },
   plugins: [
+    livereload(),
     nodeResolve({
       preferBuiltins: true,
     }),

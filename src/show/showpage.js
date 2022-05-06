@@ -1,10 +1,12 @@
 import { readLines } from '../util/store';
 import { arrIsNull, formatTime } from '../util/util';
-import ExcellentExport from 'excellentexport';
+// import ExcellentExport from 'excellentexport';
+import ClipboardJS from 'clipboard'
+import Toastify from 'toastify-js'
 
 function createBtn(text) {
   const btn = document.createElement('a');
-  btn.className = 'screenshots';
+  btn.className = 'mara-copy-situ';
   btn.innerText = text;
   btn.style.width = '120px';
   btn.style.height = '40px';
@@ -22,6 +24,7 @@ function addTD(html) {
   const td = document.createElement('td');
   td.style.border = '1px solid #0064CD';
   td.style.padding = '5px 5px 5px 10px';
+  td.style.wordWrap =  'break-word';
   td.innerHTML = html;
   return td;
 }
@@ -52,6 +55,7 @@ ShowPage.prototype.createPage = function () {
     left: '0',
     width: '100%',
     height: '100%',
+    fontSize: '10px'
   });
 
   this.blackBg = this.blackBg || addElement('div', {
@@ -77,11 +81,11 @@ ShowPage.prototype.createPage = function () {
   this.container = this.container || addElement('div', {
     zIndex: 1,
     position: 'absolute',
-    width: '1000px',
+    width: '80%',
     height: '60vh',
-    left: '50%',
+    // left: '50%',
     top: '30px',
-    marginLeft: '-500px',
+    marginLeft: '10%',
   });
 
   this.tableCon = this.tableCon || addElement('div', {
@@ -89,7 +93,7 @@ ShowPage.prototype.createPage = function () {
     height: '100%',
     border: '12px solid #0064CD',
     backgroundColor: '#fff',
-    overflow: 'scroll',
+    overflowY: 'scroll',
     // overflowX: "hidden"
   });
 
@@ -97,21 +101,24 @@ ShowPage.prototype.createPage = function () {
     color: '#333333',
     width: '100%',
     borderCollapse: 'collapse',
+    tableLayout: 'fixed'
   });
 
   this.btnCon = this.btnCon || addElement('div', {
     margin: '20px auto',
-    width: '400px',
+    width: '100%',
     display: 'block',
     overflow: 'hidden',
   });
 
   if (!this.btn1) {
-    this.btn1 = createBtn('下载');
+    this.btn1 = createBtn('复制');
+    this.btn1.style.display = 'block';
+    this.btn1.style.margin = '0 auto';
     this.btn1.style.float = 'left';
   }
   if (!this.btn2) {
-    this.btn2 = createBtn('上报');
+    this.btn2 = createBtn('关闭');
     this.btn2.style.float = 'right';
   }
 
@@ -141,18 +148,63 @@ ShowPage.prototype.addEventListener = function () {
   });
 
   this.btn1.addEventListener('click', () => {
-    ExcellentExport.excel(this.btn1, this.table);
+    console.log(readLines())
+    const logs = readLines().map(line => {
+      return {
+        msg: line.msg,
+        js: line.js
+      }
+    }).reduce((prev, curr) => {
+      const currLine = Object.entries(curr).reduce((prev, curr) => {
+        return prev + `[${curr[0]}] ===> ` + ':' + curr[1] + ';\t';
+      }, '')
+      return prev + currLine + '\n';
+    }, '')
+    console.log(logs)
+    this.btn1.setAttribute('data-clipboard-text', logs)
+    const clipboard = new ClipboardJS('.mara-copy-situ');
+    clipboard.on('success', function(e) {
+      console.info('Text:', e.text);
+      Toastify({
+        text: "复制成功",
+        duration: 1000,
+        gravity: "bottom",
+        position: 'center',
+        style: {
+          position: 'fixed',
+          margin: '0 auto',
+          left: 0,
+          right: 0,
+          width: '80px',
+          textAlign: 'center',
+          background: "black",
+          zIndex: "999999",
+          padding: '5px',
+          opacity: 0.8,
+          borderRadius: '5px',
+          color: 'white'
+        }
+      }).showToast();
+      e.clearSelection();
+    });
+    clipboard.on('error', function(e) {
+      console.log(e)
+      console.error('Action:', e.action);
+      console.error('Trigger:', e.trigger);
+    });
+    // ExcellentExport.excel(this.btn1, this.table);
   });
 
   this.btn2.addEventListener('click', () => {
-    if (this.canReport) {
-      const lines = readLines();
-      if (!arrIsNull(lines) && this.csiReport) {
-        this.csiReport();
-      }
-    } else {
-      alert('对不起该功能现在没有支持！');
-    }
+    this.remove()
+    // if (this.canReport) {
+    //   const lines = readLines();
+    //   if (!arrIsNull(lines) && this.csiReport) {
+    //     this.csiReport();
+    //   }
+    // } else {
+    //   alert('对不起该功能现在没有支持！');
+    // }
   });
 
   this.addEvented = true;
@@ -182,18 +234,18 @@ ShowPage.prototype.fillContent = function () {
       const tr = addElement('tr', {
         border: '1px solid #0064CD',
       });
-      const td1 = addTD(formatTime(line.time));
-      const td2 = addTD(line.etype);
+      // const td1 = addTD(formatTime(line.time));
+      // const td2 = addTD(line.etype);
       const td3 = addTD(line.js);
       const td4 = addTD(line.msg);
       td4.style.color = '#ff0000';
-      const td5 = addTD(line.ua);
+      // const td5 = addTD(line.ua);
 
-      tr.append(td1);
-      tr.append(td2);
+      // tr.append(td1);
+      // tr.append(td2);
       tr.append(td3);
       tr.append(td4);
-      tr.append(td5);
+      // tr.append(td5);
 
       this.table.append(tr);
     }
@@ -208,21 +260,21 @@ ShowPage.prototype.addTitle = function () {
     backgroundColor: '#ccc',
   });
 
-  const td1 = document.createElement('td');
-  td1.append(document.createTextNode('time'));
-  const td2 = document.createElement('td');
-  td2.append(document.createTextNode('type'));
+  // const td1 = document.createElement('td');
+  // td1.append(document.createTextNode('time'));
+  // const td2 = document.createElement('td');
+  // td2.append(document.createTextNode('type'));
   const td3 = document.createElement('td');
   td3.append(document.createTextNode('js'));
   const td4 = document.createElement('td');
   td4.append(document.createTextNode('msg'));
-  const td5 = document.createElement('td');
-  td5.append(document.createTextNode('UA'));
-  tr.append(td1);
-  tr.append(td2);
+  // const td5 = document.createElement('td');
+  // td5.append(document.createTextNode('UA'));
+  // tr.append(td1);
+  // tr.append(td2);
   tr.append(td3);
   tr.append(td4);
-  tr.append(td5);
+  // tr.append(td5);
   this.table.append(tr);
 };
 
