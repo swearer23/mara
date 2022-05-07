@@ -48,15 +48,9 @@
     </div>
   </body>
   <script type="module">
-    import CSI from '../dist/csijs.es.js';
+    import Mara from '../dist/csijs.es.js';
     window.onload = () => {
-      const csi = new CSI({
-        feID: 'csijs',
-        report: (lines) => {
-          console.log('### 自定义上报', lines);
-        }
-      });
-      console.log('### csi ', csi);
+      const csi = new Mara({feID: 'csijs'});
     }
     
     const btnError = document.getElementById('btn-error');
