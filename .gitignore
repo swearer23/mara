@@ -20,4 +20,4 @@ Thumbs.db
 node_modules
 
 # build output
-dist
+# dist
