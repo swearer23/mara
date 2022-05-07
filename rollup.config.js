@@ -25,7 +25,7 @@ const config = {
     tryCatchDeoptimization: false,
   },
   plugins: [
-    livereload(),
+    process.argv.indexOf('-w') > -1 && livereload(),
     nodeResolve({
       preferBuiltins: true,
       browser: true
