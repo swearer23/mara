@@ -19,5 +19,5 @@ const remove = (keyName) => {
 export {
   write,
   read,
-  remove,
+  remove
 };

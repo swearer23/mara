@@ -16,7 +16,6 @@ FetchErr.prototype.probe = function () {
 
     return originFetch(input, initObject)
       .then((resp) => {
-        console.log(err, 333333333333)
         const status = `${resp.status}`;
         if (!/^2[0-9]{1,3}/gi.test(status) && +status !== 0) {
           this.forms.addLine('ERROR', {
@@ -28,7 +27,6 @@ FetchErr.prototype.probe = function () {
         return resp;
       })
       .catch((err) => {
-        console.log(err, 111111111111)
         let msg;
         try {
           msg = err && err.message ? err.message : JSON.stringify(err);

@@ -28,6 +28,7 @@ const config = {
     livereload(),
     nodeResolve({
       preferBuiltins: true,
+      browser: true
     }),
     babel({
       babelHelpers: 'bundled',

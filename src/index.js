@@ -4,7 +4,7 @@ import WinErr from './probe/winerr';
 import AjaxErr from './probe/ajaxerr';
 import FetchErr from './probe/fetcherr';
 import Forms from './form/forms';
-import { readLines } from './util/store';
+import { readLines, clearLastSession } from './util/store';
 import { arrIsNull } from './util/util';
 
 const letIE9 = () => {
@@ -39,6 +39,7 @@ class CSI {
   init(opts) {
     if (this.inited || letIE9()) return;
     try {
+      clearLastSession();
       this.opts = opts;
       const formObj = new Forms(opts.feID);
       (new Panel(this)).init();

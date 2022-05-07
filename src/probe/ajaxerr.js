@@ -1,6 +1,6 @@
-// import { nanoid } from "nanoid";
+import { nanoid } from "nanoid";
 
-const nanoid = () => {return 1}
+// const nanoid = () => {return 1}
 
 const xhrs = {};
 const AjaxErr = function (forms) {
@@ -57,7 +57,6 @@ AjaxErr.prototype.addListener = function (xhr, args) {
   const { ontimeout } = xhr;
 
   xhr.addEventListener('loadend', () => {
-    console.log(xhrs[xhr.__xhrid].payload)
     const payload = xhrs[xhr.__xhrid].payload || {}
     const status = `${xhr.status}`;
     const context = {
@@ -77,7 +76,6 @@ AjaxErr.prototype.addListener = function (xhr, args) {
   })
 
   // xhr.onloadend = (...params) => {
-  //   console.log(44444444444444)
   //   const status = `${xhr.status}`;
   //   if (!/^2[0-9]{1,3}/ig.test(status) && status !== '0') {
   //     this.forms.addLine('ERROR', {
