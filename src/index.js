@@ -27,7 +27,6 @@ class CSI {
   }
 
   checkParams(opts) {
-    console.log(opts);
     if (!opts.feID) {
       throw Error('feID必传');
     }

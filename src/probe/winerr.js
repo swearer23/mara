@@ -21,6 +21,11 @@ WinErr.prototype.probe = function () {
     // probe(this.forms, message, url, line);
     probe(this.forms, args[0], args[1], args[2]);
   };
+
+  window.onunhandledrejection = (...args) => {
+    if (typeof onerror === 'function') onerror.apply(this, args);
+    probe(this.forms, args[0], args[1], args[2]);
+  }
 };
 
 export default WinErr;

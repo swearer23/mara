@@ -1,7 +1,7 @@
 import { obj2Str, str2Obj } from './util';
 import { read as storageRead, remove as storageRemove, write as storageWrite } from './storage';
 
-const MAX_LENGTH = 60;
+const MAX_LENGTH = 1024;
 
 const preName = 'csijs_';
 

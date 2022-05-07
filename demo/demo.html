@@ -9,9 +9,10 @@
     />
     <title>T.E.S.T</title>
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
       // VConsole will be exported to `window.VConsole` by default.
-      var vConsole = new window.VConsole();
+      // var vConsole = new window.VConsole();
     </script>
     <style>
       html,
@@ -43,24 +44,47 @@
     <div class="show">
       <div id="btn-error" class="btn">制造错误</div>
       <div id="btn-report" class="btn">发送日志</div>
+      <div id="btn-request" class="btn">发送请求</div>
     </div>
   </body>
   <script type="module">
     import CSI from '../dist/csijs.es.js';
-    const csi = new CSI({
-      feID: 'csijs',
-      report: (lines) => {
-        console.log('### 自定义上报', lines);
-      }
-    });
-    console.log('### csi ', csi);
+    window.onload = () => {
+      const csi = new CSI({
+        feID: 'csijs',
+        report: (lines) => {
+          console.log('### 自定义上报', lines);
+        }
+      });
+      console.log('### csi ', csi);
+    }
+    
     const btnError = document.getElementById('btn-error');
     const btnReport = document.getElementById('btn-report');
+    const btnRequest = document.getElementById('btn-request');
     btnError.addEventListener('click', () => {
       test(123);
     });
     btnReport.addEventListener('click', () => {
       csi.report();
     });
+
+    btnRequest.addEventListener('click', () => {
+      // axios.post('http://julianos-uat.longfor.com/api/admin/snapshot/make/url', {
+      //   guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+      // }, (res) => {
+      //   console.log(res)
+      // }).catch(err => {
+      //   console.log(err)
+      // })
+      axios.get('http://julianos-uat.longfor.com')
+    })
+
+    // const oError = window.console.error
+    // window.console.error = function () {
+    //   console.debug(arguments)
+    //   oError.apply(window.console, arguments)
+    // }
+    
   </script>
 </html>

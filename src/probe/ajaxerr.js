@@ -1,37 +1,94 @@
-const xhrs = [];
+// import { nanoid } from "nanoid";
+
+const nanoid = () => {return 1}
+
+const xhrs = {};
 const AjaxErr = function (forms) {
   this.forms = forms;
 };
 
+const addAjaxError = (forms, status, args) => {
+  forms.addLine('ERROR', {
+    etype: 'ajax error',
+    msg: `status:${status}`,
+    js: args.join(' :')
+  });
+}
+
+const addAjaxTrace = (forms, status, args) => {
+  forms.addLine('AJAXTRACE', {
+    etype: 'ajax trace',
+    msg: `status:${status}`,
+    js: args.join(' :')
+  });
+}
+
 // overwrite XMLHttpRequest
 AjaxErr.prototype.probe = function () {
   const that = this;
-  const { open } = XMLHttpRequest.prototype;
+  const { open, send } = XMLHttpRequest.prototype;
+  
   XMLHttpRequest.prototype.open = function() {
+    const xhrid = nanoid();
+    this.__xhrid = xhrid;
     that.addListener(this, arguments);
     open.apply(this, arguments);
   };
+
+  XMLHttpRequest.prototype.setRequestHeader = function() {
+    const [key, value] = [...arguments]
+    if (key.toLowerCase() === 'content-type' && value.toLowerCase() === 'application/json') {
+      xhrs[this.__xhrid].recordPayload = true;
+    }
+  }
+
+  XMLHttpRequest.prototype.send = function() {
+    if (xhrs[this.__xhrid].recordPayload) {
+      xhrs[this.__xhrid].payload = [...arguments];
+    }
+    send.apply(this, arguments);
+  }
 };
 
 AjaxErr.prototype.addListener = function (xhr, args) {
-  if (xhrs.indexOf(xhr) >= 0) return;
-  xhrs.push(xhr);
+  if (xhrs[xhr.__xhrid]) return;
+  xhrs[xhr.__xhrid] = { xhr }
 
-  const { onloadend } = xhr;
   const { ontimeout } = xhr;
 
-  xhr.onloadend = (...params) => {
+  xhr.addEventListener('loadend', () => {
+    console.log(xhrs[xhr.__xhrid].payload)
+    const payload = xhrs[xhr.__xhrid].payload || {}
     const status = `${xhr.status}`;
-    if (!/^2[0-9]{1,3}/ig.test(status) && status !== '0') {
-      this.forms.addLine('ERROR', {
-        etype: 'ajax error',
-        msg: `status:${xhr.status}`,
-        js: args.join(' :'),
-      });
-
-      onloadend && onloadend.apply(this, params);
+    const context = {
+      status,
+      payload: payload,
+      response: xhr.response
     }
-  };
+    if (!/^2[0-9]{1,3}/ig.test(status) && status !== '0') {
+      addAjaxError(this.forms, JSON.stringify(context), [...args]);
+    } else {
+      addAjaxTrace(this.forms, JSON.stringify(context), [...args]);
+    }
+  })
+
+  xhr.addEventListener('error', () => {
+    addAjaxError(this.forms, xhr.status || 'networkError', [...args]);
+  })
+
+  // xhr.onloadend = (...params) => {
+  //   console.log(44444444444444)
+  //   const status = `${xhr.status}`;
+  //   if (!/^2[0-9]{1,3}/ig.test(status) && status !== '0') {
+  //     this.forms.addLine('ERROR', {
+  //       etype: 'ajax error',
+  //       msg: `status:${xhr.status}`,
+  //       js: args.join(' :'),
+  //     });
+
+  //     onloadend && onloadend.apply(this, params);
+  //   }
+  // };
 
   xhr.ontimeout = (...params) => {
     this.forms.addLine('ERROR', {

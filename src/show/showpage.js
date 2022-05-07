@@ -142,13 +142,11 @@ ShowPage.prototype.createPage = function () {
 ShowPage.prototype.addEventListener = function () {
   if (this.addEvented) return;
   const self = this;
-  console.log(self);
   this.blackBg.addEventListener('click', () => {
     this.remove();
   });
 
   this.btn1.addEventListener('click', () => {
-    console.log(readLines())
     const logs = readLines().map(line => {
       return {
         msg: line.msg,
@@ -160,11 +158,9 @@ ShowPage.prototype.addEventListener = function () {
       }, '')
       return prev + currLine + '\n';
     }, '')
-    console.log(logs)
     this.btn1.setAttribute('data-clipboard-text', logs)
     const clipboard = new ClipboardJS('.mara-copy-situ');
     clipboard.on('success', function(e) {
-      console.info('Text:', e.text);
       Toastify({
         text: "复制成功",
         duration: 1000,
@@ -186,11 +182,6 @@ ShowPage.prototype.addEventListener = function () {
         }
       }).showToast();
       e.clearSelection();
-    });
-    clipboard.on('error', function(e) {
-      console.log(e)
-      console.error('Action:', e.action);
-      console.error('Trigger:', e.trigger);
     });
     // ExcellentExport.excel(this.btn1, this.table);
   });
@@ -235,14 +226,14 @@ ShowPage.prototype.fillContent = function () {
         border: '1px solid #0064CD',
       });
       // const td1 = addTD(formatTime(line.time));
-      // const td2 = addTD(line.etype);
+      const td2 = addTD(line.etype);
       const td3 = addTD(line.js);
       const td4 = addTD(line.msg);
       td4.style.color = '#ff0000';
       // const td5 = addTD(line.ua);
 
       // tr.append(td1);
-      // tr.append(td2);
+      tr.append(td2);
       tr.append(td3);
       tr.append(td4);
       // tr.append(td5);
@@ -262,8 +253,8 @@ ShowPage.prototype.addTitle = function () {
 
   // const td1 = document.createElement('td');
   // td1.append(document.createTextNode('time'));
-  // const td2 = document.createElement('td');
-  // td2.append(document.createTextNode('type'));
+  const td2 = document.createElement('td');
+  td2.append(document.createTextNode('type'));
   const td3 = document.createElement('td');
   td3.append(document.createTextNode('js'));
   const td4 = document.createElement('td');
@@ -271,7 +262,7 @@ ShowPage.prototype.addTitle = function () {
   // const td5 = document.createElement('td');
   // td5.append(document.createTextNode('UA'));
   // tr.append(td1);
-  // tr.append(td2);
+  tr.append(td2);
   tr.append(td3);
   tr.append(td4);
   // tr.append(td5);
