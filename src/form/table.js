@@ -27,7 +27,7 @@ import { extend, getID, reset } from '../util/util';
 import { read, write, remove } from '../util/store';
 import { getUserAgent } from '../util/device';
 
-const MAX_LENGTH = 45;
+const MAX_LENGTH = 20;
 
 const Info = function () {
   this.fid = '';
