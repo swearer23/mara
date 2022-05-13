@@ -1,8 +1,8 @@
 import { readLines } from '../util/store';
-import { arrIsNull, formatTime } from '../util/util';
-// import ExcellentExport from 'excellentexport';
-import ClipboardJS from 'clipboard'
-import Toastify from 'toastify-js'
+import { arrIsNull } from '../util/util';
+import { nanoid } from 'nanoid'
+import FileSaver from 'file-saver'
+import Swal from 'sweetalert2'
 
 function createBtn(text) {
   const btn = document.createElement('a');
@@ -83,18 +83,15 @@ ShowPage.prototype.createPage = function () {
     position: 'absolute',
     width: '80%',
     height: '60vh',
-    // left: '50%',
     top: '30px',
     marginLeft: '10%',
   });
 
   this.tableCon = this.tableCon || addElement('div', {
-    // width: "100%",
     height: '100%',
     border: '12px solid #0064CD',
     backgroundColor: '#fff',
     overflowY: 'scroll',
-    // overflowX: "hidden"
   });
 
   this.table = this.table || addElement('table', {
@@ -147,55 +144,13 @@ ShowPage.prototype.addEventListener = function () {
   });
 
   this.btn1.addEventListener('click', () => {
-    const logs = readLines().map(line => {
-      return {
-        msg: line.msg,
-        js: line.js
-      }
-    }).reduce((prev, curr) => {
-      const currLine = Object.entries(curr).reduce((prev, curr) => {
-        return prev + `[${curr[0]}] ===> ` + ':' + curr[1] + ';\t';
-      }, '')
-      return prev + currLine + '\n';
-    }, '')
-    this.btn1.setAttribute('data-clipboard-text', logs)
-    const clipboard = new ClipboardJS('.mara-copy-situ');
-    clipboard.on('success', function(e) {
-      Toastify({
-        text: "复制成功",
-        duration: 1000,
-        gravity: "bottom",
-        position: 'center',
-        style: {
-          position: 'fixed',
-          margin: '0 auto',
-          left: 0,
-          right: 0,
-          width: '80px',
-          textAlign: 'center',
-          background: "black",
-          zIndex: "999999",
-          padding: '5px',
-          opacity: 0.8,
-          borderRadius: '5px',
-          color: 'white'
-        }
-      }).showToast();
-      e.clearSelection();
-    });
-    // ExcellentExport.excel(this.btn1, this.table);
+    const logs = readLines().map(item => `${JSON.stringify(item, null, 2)}\n`);
+    var file = new File(logs, `${nanoid()}.dat`, {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(file);
   });
 
   this.btn2.addEventListener('click', () => {
     this.remove()
-    // if (this.canReport) {
-    //   const lines = readLines();
-    //   if (!arrIsNull(lines) && this.csiReport) {
-    //     this.csiReport();
-    //   }
-    // } else {
-    //   alert('对不起该功能现在没有支持！');
-    // }
   });
 
   this.addEvented = true;

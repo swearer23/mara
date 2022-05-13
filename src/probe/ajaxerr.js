@@ -1,7 +1,5 @@
 import { nanoid } from "nanoid";
 
-// const nanoid = () => {return 1}
-
 const xhrs = {};
 const AjaxErr = function (forms) {
   this.forms = forms;
