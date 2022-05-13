@@ -37,12 +37,12 @@
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",
     "rollup": "^2.47.0",
+    "rollup-plugin-import-css": "^3.0.3",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
     "rollup-plugin-terser": "^7.0.2"
   },
   "dependencies": {
-    "clipboard": "^2.0.11",
     "file-saver": "^2.0.5",
     "hammerjs": "^2.0.8",
     "nanoid": "^3.3.4",

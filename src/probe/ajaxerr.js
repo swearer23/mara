@@ -56,13 +56,14 @@ AjaxErr.prototype.addListener = function (xhr, args) {
 
   xhr.addEventListener('loadend', () => {
     const payload = xhrs[xhr.__xhrid].payload || {}
-    const status = `${xhr.status}`;
+    const status = xhr.status
     const context = {
       status,
       payload: payload,
       response: xhr.response
     }
-    if (!/^2[0-9]{1,3}/ig.test(status) && status !== '0') {
+    if (parseInt(status) === 0) return
+    if (!/^2[0-9]{1,3}/ig.test(status)) {
       addAjaxError(this.forms, JSON.stringify(context), [...args]);
     } else {
       addAjaxTrace(this.forms, JSON.stringify(context), [...args]);
@@ -72,19 +73,6 @@ AjaxErr.prototype.addListener = function (xhr, args) {
   xhr.addEventListener('error', () => {
     addAjaxError(this.forms, xhr.status || 'networkError', [...args]);
   })
-
-  // xhr.onloadend = (...params) => {
-  //   const status = `${xhr.status}`;
-  //   if (!/^2[0-9]{1,3}/ig.test(status) && status !== '0') {
-  //     this.forms.addLine('ERROR', {
-  //       etype: 'ajax error',
-  //       msg: `status:${xhr.status}`,
-  //       js: args.join(' :'),
-  //     });
-
-  //     onloadend && onloadend.apply(this, params);
-  //   }
-  // };
 
   xhr.ontimeout = (...params) => {
     this.forms.addLine('ERROR', {

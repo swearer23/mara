@@ -5,6 +5,7 @@ import { babel } from '@rollup/plugin-babel';
 import { terser } from "rollup-plugin-terser";
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
+import css from "rollup-plugin-import-css";
 
 const config = {
   input: {
@@ -30,6 +31,7 @@ const config = {
       preferBuiltins: true,
       browser: true
     }),
+    css(),
     babel({
       babelHelpers: 'bundled',
       exclude: "node_modules/**",
