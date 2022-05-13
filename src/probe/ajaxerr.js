@@ -8,7 +8,7 @@ const AjaxErr = function (forms) {
 const addAjaxError = (forms, status, args) => {
   forms.addLine('ERROR', {
     etype: 'ajax error',
-    msg: `status:${status}`,
+    msg: status,
     js: args.join(' :')
   });
 }
@@ -16,7 +16,7 @@ const addAjaxError = (forms, status, args) => {
 const addAjaxTrace = (forms, status, args) => {
   forms.addLine('AJAXTRACE', {
     etype: 'ajax trace',
-    msg: `status:${status}`,
+    msg: status,
     js: args.join(' :')
   });
 }
@@ -55,13 +55,25 @@ AjaxErr.prototype.addListener = function (xhr, args) {
   const { ontimeout } = xhr;
 
   xhr.addEventListener('loadend', () => {
-    const payload = xhrs[xhr.__xhrid].payload || {}
     const status = xhr.status
+    let payload = xhrs[xhr.__xhrid].payload || {}
+    try {
+      payload = JSON.parse(payload)
+    } catch (err) {
+      payload = payload
+    }
+    let response
+    try {
+      response = JSON.parse(xhr.response)
+    } catch (err) {
+      response = xhr.response
+    }
     const context = {
       status,
-      payload: payload,
-      response: xhr.response
+      payload,
+      response
     }
+    console.log(context)
     if (parseInt(status) === 0) return
     if (!/^2[0-9]{1,3}/ig.test(status)) {
       addAjaxError(this.forms, JSON.stringify(context), [...args]);

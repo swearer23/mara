@@ -63,13 +63,9 @@
     });
 
     btnRequest.addEventListener('click', () => {
-      // axios.post('http://julianos-uat.longfor.com/api/admin/snapshot/make/url', {
-      //   guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
-      // }, (res) => {
-      //   console.log(res)
-      // }).catch(err => {
-      //   console.log(err)
-      // })
+      axios.post('http://julianos-uat.longfor.com/api/admin/snapshot/make/url', {
+        guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+      })
       axios.get('http://julianos-uat.longfor.com')
     })
 
