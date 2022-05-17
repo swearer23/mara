@@ -24,7 +24,7 @@ const addAjaxTrace = (forms, status, args) => {
 // overwrite XMLHttpRequest
 AjaxErr.prototype.probe = function () {
   const that = this;
-  const { open, send } = XMLHttpRequest.prototype;
+  const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
   
   XMLHttpRequest.prototype.open = function() {
     const xhrid = nanoid();
@@ -38,6 +38,7 @@ AjaxErr.prototype.probe = function () {
     if (key.toLowerCase() === 'content-type' && value.toLowerCase() === 'application/json') {
       xhrs[this.__xhrid].recordPayload = true;
     }
+    setRequestHeader.apply(this, arguments);
   }
 
   XMLHttpRequest.prototype.send = function() {
@@ -73,7 +74,6 @@ AjaxErr.prototype.addListener = function (xhr, args) {
       payload,
       response
     }
-    console.log(context)
     if (parseInt(status) === 0) return
     if (!/^2[0-9]{1,3}/ig.test(status)) {
       addAjaxError(this.forms, JSON.stringify(context), [...args]);
