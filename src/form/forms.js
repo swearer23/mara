@@ -1,11 +1,10 @@
 import Table from './table.js';
 
 const Forms = function (feID, maxLine) {
-  this.norTable = new Table(feID, 'nor', maxLine);
   this.errTable = new Table(feID, 'err', maxLine);
 };
 Forms.prototype = {
-  addLine(type, data) {
+  addLine(data) {
     // const table = (type === 'err' || type === 'error' || type === 'ERROR') ? this.errTable : this.norTable;
     const table = this.errTable;
     // 防止阻塞

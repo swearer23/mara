@@ -49,14 +49,14 @@ class Mara {
       (new FetchErr(formObj)).probe();
       this.inited = true;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 
   // 自定义错误
   probe(msg) {
     if (letIE9()) return;
-    this.forms.addLine('ERROR', {
+    this.forms.addLine({
       etype: 'custom error',
       msg,
     });

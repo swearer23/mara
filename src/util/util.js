@@ -63,7 +63,7 @@ const reset = (obj) => {
   for (const id in obj) {
     obj[id] = '';
   }
-
+  obj.url = location ? location.href : ''
   return obj;
 };
 

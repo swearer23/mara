@@ -1,4 +1,7 @@
 // 本地存储
+
+window.__mara_storage__ = {}
+
 const write = (keyName, keyValue) => {
   try {
     localStorage && localStorage.setItem(keyName, keyValue);

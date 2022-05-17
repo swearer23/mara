@@ -18,7 +18,7 @@ FetchErr.prototype.probe = function () {
       .then((resp) => {
         const status = `${resp.status}`;
         if (!/^2[0-9]{1,3}/gi.test(status) && +status !== 0) {
-          this.forms.addLine('ERROR', {
+          this.forms.addLine({
             etype: 'fetch error',
             msg: `status:${resp.status}`,
             js: `${method} :${url}`,
@@ -33,7 +33,7 @@ FetchErr.prototype.probe = function () {
         } catch (e) {
           msg = err && err.message ? err.message : err;
         }
-        this.forms.addLine('ERROR', {
+        this.forms.addLine({
           etype: 'fetch error',
           msg,
           js: `${method} :${url}`,

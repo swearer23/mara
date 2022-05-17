@@ -6,7 +6,7 @@ const AjaxErr = function (forms) {
 };
 
 const addAjaxError = (forms, status, args) => {
-  forms.addLine('ERROR', {
+  forms.addLine({
     etype: 'ajax error',
     msg: status,
     js: args.join(' :')
@@ -14,10 +14,10 @@ const addAjaxError = (forms, status, args) => {
 }
 
 const addAjaxTrace = (forms, status, args) => {
-  forms.addLine('AJAXTRACE', {
+  forms.addLine({
     etype: 'ajax trace',
     msg: status,
-    js: args.join(' :')
+    js: args.join(':')
   });
 }
 
@@ -76,11 +76,12 @@ AjaxErr.prototype.addListener = function (xhr, args) {
       response
     }
     if (parseInt(status) === 0) return
+    console.log(args)
     if (!/^2[0-9]{1,3}/ig.test(status)) {
-      addAjaxError(this.forms, JSON.stringify(context), [...args]);
+      addAjaxError(this.forms, context, [...args]);
     } else {
       if (this.logAjaxTrace)
-        addAjaxTrace(this.forms, JSON.stringify(context), [...args]);
+        addAjaxTrace(this.forms, context, [...args]);
     }
   })
 
@@ -89,7 +90,7 @@ AjaxErr.prototype.addListener = function (xhr, args) {
   })
 
   xhr.ontimeout = (...params) => {
-    this.forms.addLine('ERROR', {
+    this.forms.addLine({
       etype: 'ajax error',
       msg: `timeout ${xhr.status}`,
       js: args.join(' :'),

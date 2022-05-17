@@ -1,8 +1,6 @@
 import { obj2Str, str2Obj } from './util';
 import { read as storageRead, remove as storageRemove, write as storageWrite } from './storage';
 
-const MAX_LENGTH = 1024;
-
 const preName = 'csijs_';
 
 const prefix = (keyName) => {
@@ -12,7 +10,7 @@ const prefix = (keyName) => {
 
 const write = (keyName, keyValue, pure) => {
   if (typeof keyValue === 'object') {
-    keyValue = pure ? limit(keyValue) : obj2Str(limit(keyValue));
+    keyValue = pure ? keyValue : obj2Str(keyValue);
   }
 
   storageWrite(prefix(keyName), keyValue);
@@ -29,24 +27,6 @@ const read = (keyName, pure) => {
 
 const remove = (keyName) => {
   storageRemove(prefix(keyName));
-};
-
-// 限制字符长度
-const limit = (keyValue) => {
-  for (const id in keyValue) {
-    let key = keyValue[id];
-    if (typeof key !== 'string') {
-      try {
-        key = key.toString();
-      } catch (e) {
-        key = `${key}`;
-      }
-    }
-
-    keyValue[id] = key.substr(0, MAX_LENGTH);
-  }
-
-  return keyValue;
 };
 
 const readLines = () => {
@@ -77,7 +57,6 @@ export {
   write,
   read,
   remove,
-  limit,
   readLines,
   clearLastSession
 };
