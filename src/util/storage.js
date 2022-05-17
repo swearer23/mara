@@ -1,25 +1,29 @@
 
 class Storage {
-  static instance = null
 
   constructor() {
-    if (!Storage.instance) {
-      Storage.instance = {}
+    if (Storage.instance) {
+      return Storage.instance
+    } else {
+      this.__pool__ = {}
+      Storage.instance = this
     }
   }
 
   setItem(key, value) {
-    Storage.instance[key] = value;
+    this.__pool__[key] = value;
   }
 
   getItem(key) {
-    return Storage.instance[key]
+    return this.__pool__[key]
   }
 
   remove(keyName) {
-    Storage.instance[keyName] = null
+    this.__pool__[keyName] = null
   }
 }
+
+Storage.instance = null
 
 const storage = new Storage();
 const debug = process.env.DEBUG
@@ -28,7 +32,7 @@ const write = (keyName, keyValue) => {
   try {
     storage.setItem(keyName, keyValue);
     if (debug) localStorage.setItem(keyName, keyValue)
-  } catch (e) {}
+  } catch (e) {console.error(e)}
 };
 
 const read = (keyName) => {
