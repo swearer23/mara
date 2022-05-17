@@ -47,9 +47,13 @@
     </div>
   </body>
   <script type="module">
-    import Mara from '../dist/csijs.es.js';
+    import Mara from '../dist/mara.es.js';
     window.onload = () => {
-      const csi = new Mara({feID: 'csijs'});
+      const csi = new Mara({
+        feID: 'csijs',
+        maxLine: 2,
+        // logAjaxTrace: true
+      });
     }
     
     const btnError = document.getElementById('btn-error');

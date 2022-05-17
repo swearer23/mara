@@ -22,8 +22,9 @@ const addAjaxTrace = (forms, status, args) => {
 }
 
 // overwrite XMLHttpRequest
-AjaxErr.prototype.probe = function () {
+AjaxErr.prototype.probe = function (logAjaxTrace = false) {
   const that = this;
+  this.logAjaxTrace = logAjaxTrace
   const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
   
   XMLHttpRequest.prototype.open = function() {
@@ -78,7 +79,8 @@ AjaxErr.prototype.addListener = function (xhr, args) {
     if (!/^2[0-9]{1,3}/ig.test(status)) {
       addAjaxError(this.forms, JSON.stringify(context), [...args]);
     } else {
-      addAjaxTrace(this.forms, JSON.stringify(context), [...args]);
+      if (this.logAjaxTrace)
+        addAjaxTrace(this.forms, JSON.stringify(context), [...args]);
     }
   })
 

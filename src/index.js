@@ -19,8 +19,9 @@ const letIE9 = () => {
  * @param opts.feID: 项目Id， 必传
  * @param opts.report: 函数，自定义上报函数
  */
-class CSI {
+class Mara {
   constructor(opts = {}) {
+    opts.report = opts.report || (() => {console.warn('report needs to be defined')});
     this.inited = false;
     this.checkParams(opts);
     this.init(opts);
@@ -30,9 +31,9 @@ class CSI {
     if (!opts.feID) {
       throw Error('feID必传');
     }
-    // if (!opts.report || typeof opts.report !== 'function') {
-    //   throw Error('请填写自定义上报函数');
-    // }
+    if (!opts.report || typeof opts.report !== 'function') {
+      throw Error('请填写自定义上报函数');
+    }
   }
 
   // 初始化
@@ -41,10 +42,10 @@ class CSI {
     try {
       clearLastSession();
       this.opts = opts;
-      const formObj = new Forms(opts.feID);
+      const formObj = new Forms(opts.feID, opts.maxLine);
       (new Panel(this)).init();
       (new WinErr(formObj)).probe();
-      (new AjaxErr(formObj)).probe();
+      (new AjaxErr(formObj)).probe(opts.logAjaxTrace);
       (new FetchErr(formObj)).probe();
       this.inited = true;
     } catch (e) {
@@ -70,4 +71,4 @@ class CSI {
   }
 }
 
-export default CSI;
+export default Mara;

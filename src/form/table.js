@@ -51,7 +51,7 @@ const Line = function () {
 };
 
 
-const Table = function (feID, type) {
+const Table = function (feID, type, maxLine) {
   const initInfo = {
     feid: feID,
     uid: getID(),
@@ -61,6 +61,7 @@ const Table = function (feID, type) {
     length: 0,
   };
 
+  this.maxLine = maxLine || MAX_LENGTH
   this.info = extend(new Info(), initInfo, read('info'));
   this.line = new Line();
 };
@@ -91,14 +92,14 @@ Table.prototype = {
     min = !min ? max : min;
 
     let length = max - min + 1;
-    if (length > MAX_LENGTH) {
-      const n = length - MAX_LENGTH;
+    if (length > this.maxLine) {
+      const n = length - this.maxLine;
       for (let i = 0; i < n; i++) {
         const keyName = `${this.info.type}_${min + i}`;
         remove(keyName);
       }
 
-      length = MAX_LENGTH;
+      length = this.maxLine;
     }
 
     this.info.length = length;

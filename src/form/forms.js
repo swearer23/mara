@@ -1,8 +1,8 @@
 import Table from './table.js';
 
-const Forms = function (feID) {
-  this.norTable = new Table(feID, 'nor');
-  this.errTable = new Table(feID, 'err');
+const Forms = function (feID, maxLine) {
+  this.norTable = new Table(feID, 'nor', maxLine);
+  this.errTable = new Table(feID, 'err', maxLine);
 };
 Forms.prototype = {
   addLine(type, data) {
