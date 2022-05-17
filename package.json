@@ -1,13 +1,13 @@
 {
   "name": "@longfor/mara",
   "version": "1.1.2",
-  "description": "csijs是一个前端日志系统，它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
+  "description": "mara是一个前端日志系统，它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
   "main": "./dist/mara.es.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "start": "rollup -c -w --host 0.0.0.0",
+    "start": "DEBUG=false rollup -c -w --host 0.0.0.0",
     "build": "rm -rf ./dist && rollup -c",
     "dev": "serve",
     "lint": "eslint ./src",
@@ -34,6 +34,7 @@
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^18.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-replace": "^4.0.0",
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",
     "rollup": "^2.47.0",

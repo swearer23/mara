@@ -6,6 +6,7 @@ import { terser } from "rollup-plugin-terser";
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
 import css from "rollup-plugin-import-css";
+import replace from '@rollup/plugin-replace';
 
 const config = {
   input: {
@@ -18,7 +19,7 @@ const config = {
     format: 'es',
     exports: 'named',
     externalLiveBindings: false,
-    freeze: false,
+    freeze: false
   },
   treeshake: {
     moduleSideEffects: 'no-external',
@@ -30,6 +31,11 @@ const config = {
     nodeResolve({
       preferBuiltins: true,
       browser: true
+    }),
+    replace({
+      preventAssignment: true,
+      include: ['src/**/*.js'],
+      'process.env.DEBUG': process.env.DEBUG
     }),
     css(),
     babel({

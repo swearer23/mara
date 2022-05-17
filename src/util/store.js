@@ -45,18 +45,9 @@ const readLines = () => {
   return lines;
 };
 
-const clearLastSession = () => {
-  for (let key in localStorage) {
-    if (key.indexOf(preName) > -1) {
-      storageRemove(key);
-    }
-  }
-}
-
 export {
   write,
   read,
   remove,
-  readLines,
-  clearLastSession
+  readLines
 };

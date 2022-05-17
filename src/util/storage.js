@@ -1,21 +1,44 @@
-// 本地存储
 
-window.__mara_storage__ = {}
+class Storage {
+  static instance = null
+
+  constructor() {
+    if (!Storage.instance) {
+      Storage.instance = {}
+    }
+  }
+
+  setItem(key, value) {
+    Storage.instance[key] = value;
+  }
+
+  getItem(key) {
+    return Storage.instance[key]
+  }
+
+  remove(keyName) {
+    Storage.instance[keyName] = null
+  }
+}
+
+const storage = new Storage();
+const debug = process.env.DEBUG
 
 const write = (keyName, keyValue) => {
   try {
-    localStorage && localStorage.setItem(keyName, keyValue);
+    storage.setItem(keyName, keyValue);
+    if (debug) localStorage.setItem(keyName, keyValue)
   } catch (e) {}
 };
 
 const read = (keyName) => {
-  if (localStorage && localStorage.getItem) return localStorage.getItem(keyName);
+  if (storage.getItem) return storage.getItem(keyName);
   return null;
 };
 
 const remove = (keyName) => {
   try {
-    localStorage && localStorage.removeItem(keyName);
+    storage && storage.removeItem(keyName);
   } catch (e) {}
 };
 
