@@ -1,8 +1,8 @@
 {
   "name": "@longfor/mara",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "csijs是一个前端日志系统，它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
-  "main": "./dist/csijs.es.js",
+  "main": "./dist/mara.es.js",
   "directories": {
     "test": "test"
   },
@@ -15,12 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:tnfe/csijs.git"
+    "url": "git@git.longhu.net:8010/flowdata/mara.git"
   },
   "author": "TNFE",
   "license": "ISC",
   "keywords": [
-    "csijs / felog / tntlog / log / frontendlog"
+    "situ / felog / tntlog / log / frontendlog"
   ],
   "files": [
     "dist",

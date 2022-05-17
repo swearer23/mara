@@ -13,7 +13,7 @@ const config = {
   },
   output: {
     dir: path.resolve(__dirname, 'dist/'),
-    entryFileNames: `csijs.es.js`,
+    entryFileNames: `mara.es.js`,
     chunkFileNames: 'chunks/dep-[hash].js',
     format: 'es',
     exports: 'named',
