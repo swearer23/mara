@@ -32,7 +32,7 @@ const config = {
       preferBuiltins: true,
       browser: true
     }),
-    replace({
+    process.argv.indexOf('-w') > -1 && replace({
       preventAssignment: true,
       include: ['src/**/*.js'],
       'process.env.DEBUG': process.env.DEBUG

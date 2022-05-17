@@ -76,7 +76,6 @@ AjaxErr.prototype.addListener = function (xhr, args) {
       response
     }
     if (parseInt(status) === 0) return
-    console.log(args)
     if (!/^2[0-9]{1,3}/ig.test(status)) {
       addAjaxError(this.forms, context, [...args]);
     } else {

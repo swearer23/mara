@@ -42,7 +42,8 @@ class Mara {
     try {
       this.opts = opts;
       const formObj = new Forms(opts.feID, opts.maxLine);
-      (new Panel(this)).init();
+      this.panel = new Panel(this);
+      this.panel.init(opts.customPanelTrigger);
       (new WinErr(formObj)).probe();
       (new AjaxErr(formObj)).probe(opts.logAjaxTrace);
       (new FetchErr(formObj)).probe();
@@ -67,6 +68,10 @@ class Mara {
     const lines = readLines();
     if (arrIsNull(lines)) return;
     this.opts.report(lines);
+  }
+
+  showPanel () {
+    this.panel.toggleShow();
   }
 }
 

@@ -44,6 +44,7 @@
       <div id="btn-error" class="btn">制造错误</div>
       <div id="btn-report" class="btn">发送日志</div>
       <div id="btn-request" class="btn">发送请求</div>
+      <div id="btn-toggle-showpage" class="btn">自定义触发弹窗</div>
     </div>
   </body>
   <script type="module">
@@ -52,27 +53,32 @@
       const csi = new Mara({
         feID: 'csijs',
         // maxLine: 2,
-        logAjaxTrace: true
+        logAjaxTrace: true,
+        customPanelTrigger: true
       });
+      const btnError = document.getElementById('btn-error');
+      const btnReport = document.getElementById('btn-report');
+      const btnRequest = document.getElementById('btn-request');
+      const btnTogglePage = document.getElementById('btn-toggle-showpage');
+      btnError.addEventListener('click', () => {
+        test(123);
+      });
+      btnReport.addEventListener('click', () => {
+        csi.report();
+      });
+
+      btnRequest.addEventListener('click', () => {
+        axios.post('http://julianos-uat.longfor.com/api/admin/snapshot/make/url', {
+          guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+        })
+        axios.get('http://julianos-uat.longfor.com')
+      })
+
+      btnTogglePage.addEventListener('click', () => {
+        csi.showPanel()
+      })
     }
     
-    const btnError = document.getElementById('btn-error');
-    const btnReport = document.getElementById('btn-report');
-    const btnRequest = document.getElementById('btn-request');
-    btnError.addEventListener('click', () => {
-      test(123);
-    });
-    btnReport.addEventListener('click', () => {
-      csi.report();
-    });
-
-    btnRequest.addEventListener('click', () => {
-      axios.post('http://julianos-uat.longfor.com/api/admin/snapshot/make/url', {
-        guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
-      })
-      axios.get('http://julianos-uat.longfor.com')
-    })
-
     // const oError = window.console.error
     // window.console.error = function () {
     //   console.debug(arguments)

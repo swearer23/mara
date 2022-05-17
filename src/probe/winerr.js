@@ -17,7 +17,6 @@ const WinErr = function (forms) {
 WinErr.prototype.probe = function () {
   const { onerror } = window;
   window.onerror = (...args) => {
-    console.log(args)
     if (typeof onerror === 'function') onerror.apply(this, args);
     // probe(this.forms, message, url, line);
     probe(this.forms, args[0], args[1], args[2], args[3], args[4]);
