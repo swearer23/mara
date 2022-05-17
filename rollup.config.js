@@ -32,10 +32,10 @@ const config = {
       preferBuiltins: true,
       browser: true
     }),
-    process.argv.indexOf('-w') > -1 && replace({
+    replace({
       preventAssignment: true,
       include: ['src/**/*.js'],
-      'process.env.DEBUG': process.env.DEBUG
+      'process.env.DEBUG': process.env.DEBUG || false
     }),
     css(),
     babel({
