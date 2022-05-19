@@ -7,20 +7,31 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
 import css from "rollup-plugin-import-css";
 import replace from '@rollup/plugin-replace';
+import autoExternal from 'rollup-plugin-auto-external';
 
 const config = {
   input: {
     index: path.resolve(__dirname, 'src/index.js'),
   },
-  output: {
+  output: [{
     dir: path.resolve(__dirname, 'dist/'),
-    entryFileNames: `mara.es.js`,
+    entryFileNames: `mara.umd.js`,
     chunkFileNames: 'chunks/dep-[hash].js',
-    format: 'es',
+    format: 'umd',
+    name: 'Mara',
+    exports: 'default',
+    externalLiveBindings: false,
+    freeze: false
+  }, {
+    dir: path.resolve(__dirname, 'dist/'),
+    entryFileNames: `mara.esm.js`,
+    chunkFileNames: 'chunks/dep-[hash].js',
+    format: 'esm',
+    name: 'Mara',
     exports: 'named',
     externalLiveBindings: false,
     freeze: false
-  },
+  }],
   treeshake: {
     moduleSideEffects: 'no-external',
     propertyReadSideEffects: false,
@@ -47,6 +58,7 @@ const config = {
       ignoreDynamicRequires: true,
     }),
     terser(),
+    !process.argv.includes('-w') && autoExternal(),
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
       port: 8888,

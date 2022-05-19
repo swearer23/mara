@@ -4,7 +4,7 @@
 const probe = (forms, message, url, line, char, err) => {
   forms.addLine({
     etype: 'win error',
-    msg: `${message} \n ${err.stack}`,
+    msg: `${message} \n ${err && err.stack}`,
     js: `${url}:${line}:${char}`,
   });
   return true;
