@@ -44,7 +44,7 @@ class Mara {
       const formObj = new Forms(opts.feID, opts.maxLine);
       this.forms = formObj
       this.panel = new Panel(this);
-      this.panel.init(opts.customPanelTrigger);
+      this.panel.init(opts.customPanelTrigger, opts.operationMethod);
       (new WinErr(formObj)).probe();
       (new AjaxErr(formObj)).probe(opts.logAjaxTrace);
       (new FetchErr(formObj)).probe();

@@ -61,7 +61,7 @@ const config = {
     !process.argv.includes('-w') && autoExternal(),
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
-      port: 8888,
+      port: 80,
       openPage: '/demo/demo.html',
     }),
   ],
