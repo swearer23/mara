@@ -1,8 +1,8 @@
 import ShowPage from './showpage';
-import Hammer from 'hammerjs';
 
 function Panel(csi) {
   this.csi = csi;
+  this.tapQueue = []
 }
 
 Panel.prototype = {
@@ -12,21 +12,31 @@ Panel.prototype = {
     if (customPanelTrigger) return
     this.bindDefaultTrigger()
   },
+  onTapQueue (e, maxLength) {
+    const prevTap = this.tapQueue.length ? this.tapQueue[this.tapQueue.length - 1] : null
+    if (prevTap) {
+      if (e.timeStamp - prevTap.timeStamp > 300) {
+        console.log('clear tap queue')
+        this.tapQueue = []
+      }
+    }
+    this.tapQueue.push(e)
+    if (this.tapQueue.length === maxLength) {
+      this.tapQueue = []
+      return true
+    }
+  }
 };
 
 Panel.prototype.bindDefaultTrigger = function () {
-  var manager = new Hammer.Manager(document.querySelector('html')); 
-  var quadrupletap = new Hammer.Tap({
-    event: 'quadrupletap',
-    taps: 4
-  });
-
-  manager.add(quadrupletap);
+  document.querySelector('html').addEventListener('touchend', (e) => {
+    const isQuadrupleTap = this.onTapQueue(e, 4)
+    if (isQuadrupleTap) {
+      setTimeout(this.toggleShow.bind(this), 100)
+    }
+  })
 
   // Subscribe to desired event
-  manager.on('quadrupletap', () => {
-    this.showPage.toggleShow();
-  });
 
   document.addEventListener('keydown', (event) => {
     event = event || window.event;
