@@ -27,7 +27,7 @@ const uploadLogs = async () => {
   const logs = readLines().map(item => `${JSON.stringify(item, null, 2)}\n`);
   var blob = new Blob(logs, {type: "text/plain;charset=utf-8"});
   const filename = `${nanoid()}.dat`
-  const stsURL = 'http://localhost.longfor.com:6006/api/admin/alioss/sts'
+  const stsURL = 'http://julianos-uat.longfor.com/api/admin/alioss/sts'
   const { Credentials } = (await axios({
     method: "get",
     url: stsURL,
