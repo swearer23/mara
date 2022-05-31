@@ -16,6 +16,7 @@ ShowPage.prototype.createPage = function () {
       title: '暂无异常',
       text: '稍后窗口会自动关闭',
       icon: 'success',
+      heightAuto: false,
       timer: 2000
     })
   } else {
@@ -23,6 +24,7 @@ ShowPage.prototype.createPage = function () {
       title: '收集完成',
       text: `收集到${logs.length}条日志，点击下方按钮下载日志`,
       icon: 'success',
+      heightAuto: false,
       showConfirmButton: true,
       confirmButtonText: '下载',
       showCancelButton: true,
