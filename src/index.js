@@ -42,6 +42,7 @@ class Mara {
     try {
       this.opts = opts;
       const formObj = new Forms(opts.feID, opts.maxLine);
+      this.forms = formObj
       this.panel = new Panel(this);
       this.panel.init(opts.customPanelTrigger);
       (new WinErr(formObj)).probe();
@@ -54,7 +55,7 @@ class Mara {
   }
 
   // 自定义错误
-  probe(msg) {
+  probe(...msg) {
     if (letIE9()) return;
     this.forms.addLine({
       etype: 'custom error',
