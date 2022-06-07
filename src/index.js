@@ -52,6 +52,11 @@ class Mara {
     } catch (e) {
       console.error(e);
     }
+    if (opts.containerFontSize) {
+      const style = document.createElement('style')
+      style.innerText = `.swal2-popup {font-size: ${opts.containerFontSize}}`
+      document.head.appendChild(style)
+    }
   }
 
   // 自定义错误
