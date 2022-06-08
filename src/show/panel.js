@@ -16,7 +16,6 @@ Panel.prototype = {
     const prevTap = this.tapQueue.length ? this.tapQueue[this.tapQueue.length - 1] : null
     if (prevTap) {
       if (e.timeStamp - prevTap.timeStamp > 300) {
-        console.log('clear tap queue')
         this.tapQueue = []
       }
     }

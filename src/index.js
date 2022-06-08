@@ -46,7 +46,7 @@ class Mara {
       this.panel = new Panel(this);
       this.panel.init(opts.customPanelTrigger, opts.operationMethod);
       (new WinErr(formObj)).probe();
-      (new AjaxErr(formObj)).probe(opts.logAjaxTrace);
+      (new AjaxErr(formObj)).probe(opts.logAjaxTrace, opts.excludeAjaxKeywords);
       (new FetchErr(formObj)).probe();
       this.inited = true;
     } catch (e) {

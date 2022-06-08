@@ -22,12 +22,24 @@ const addAjaxTrace = (forms, status, args) => {
 }
 
 // overwrite XMLHttpRequest
-AjaxErr.prototype.probe = function (logAjaxTrace = false) {
+AjaxErr.prototype.probe = function (logAjaxTrace = false, excludeKeywords) {
   const that = this;
   this.logAjaxTrace = logAjaxTrace
+  this.excludeKeywords = excludeKeywords || []
   const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
+
+  const excludeURLFilter = url => {
+    for (let i = 0; i < this.excludeKeywords.length; i++) {
+      if (url.indexOf(this.excludeKeywords[i]) !== -1) {
+        return true
+      }
+    }
+    return false
+  }
   
   XMLHttpRequest.prototype.open = function() {
+    const args = [...arguments]
+    if (args[1] && excludeURLFilter(args[1])) return open.apply(this, arguments)
     const xhrid = nanoid();
     this.__xhrid = xhrid;
     that.addListener(this, arguments);
@@ -35,14 +47,16 @@ AjaxErr.prototype.probe = function (logAjaxTrace = false) {
   };
 
   XMLHttpRequest.prototype.setRequestHeader = function() {
+    if (!this.__xhrid) return setRequestHeader.apply(this, arguments);
     const [key, value] = [...arguments]
-    if (key.toLowerCase() === 'content-type' && value.toLowerCase() === 'application/json') {
+    if (key.toLowerCase() === 'content-type' && value.toLowerCase().includes('application/json')) {
       xhrs[this.__xhrid].recordPayload = true;
     }
     setRequestHeader.apply(this, arguments);
   }
 
   XMLHttpRequest.prototype.send = function() {
+    if (!this.__xhrid) return send.apply(this, arguments);
     if (xhrs[this.__xhrid].recordPayload) {
       xhrs[this.__xhrid].payload = [...arguments];
     }
