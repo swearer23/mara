@@ -15,23 +15,34 @@ const operations = {
   'report': '上报'
 }
 
-function ShowPage(report, operation='download') {
+function ShowPage(report, operation='download', env='prod') {
   this.csiReport = report;
+  this.env = env;
   if (operations[operation]) {
     this.operation = operation
     this.mainBtnText = operations[operation]
   }
 }
 
-const uploadLogs = async () => {
+const uploadLogs = async env => {
   const logs = readLines().map(item => `${JSON.stringify(item, null, 2)}\n`);
-  var blob = new Blob(logs, {type: "text/plain;charset=utf-8"});
+  const blob = new Blob(logs, {type: "text/plain;charset=utf-8"});
   const filename = `${nanoid()}.dat`
-  const stsURL = 'http://julianos-uat.longfor.com/api/admin/alioss/sts'
+  let stsURL, gaiaKey
+  if (env === 'prod') {
+    stsURL = 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/alioss/sts'
+    gaiaKey = 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'
+  } else {
+    stsURL = '//api-uat.longfor.com/julianos-uat/api/admin/alioss/sts'
+    gaiaKey = '791f6690-0714-445f-9273-78a3199622d2'
+  }
   const { Credentials } = (await axios({
     method: "get",
     url: stsURL,
-    withCredentials: true
+    withCredentials: true,
+    headers: {
+      'X-Gaia-Api-Key': gaiaKey
+    }
   })).data
   const client = new OSS({
     region: 'oss-cn-beijing',
@@ -139,7 +150,7 @@ ShowPage.prototype.createPage = function () {
       cancelButtonText: '关闭',
       preConfirm: () => {
         if (this.operation === 'upload') {
-          return uploadLogs()
+          return uploadLogs(this.env)
         } else if (this.operation === 'copy') {
           return copyLogs()
         } else {

@@ -1,13 +1,13 @@
 {
   "name": "@longfor/mara",
-  "version": "1.1.5-beta-0.5",
-  "description": "mara是一个前端日志系统，它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
+  "version": "1.2.0",
+  "description": "mara是一个前端日志系统, 它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
   "main": "./dist/mara.esm.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "start": "DEBUG=true rollup -c -w --host 0.0.0.0 --port 80",
+    "start": "DEBUG=true rollup -c -w --host localhost.longfor.com --port 443",
     "build": "rm -rf ./dist && rollup -c",
     "dev": "serve",
     "lint": "eslint ./src",

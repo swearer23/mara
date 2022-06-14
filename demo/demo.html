@@ -8,8 +8,8 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>T.E.S.T</title>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script src="https://s1.longfor.com/public/js/axios.min.js"></script>
+    <script src="https://s.longfor.com/public/js/vconsole/vconsole.min.js"></script>
     <script>
       // VConsole will be exported to `window.VConsole` by default.
       var vConsole = new window.VConsole();
@@ -52,13 +52,15 @@
   <script src="../dist/mara.umd.js"></script>
   <script type="module">
     window.onload = () => {
+      // axios.defaults.withCredentials = true;
       const csi = new Mara({
         feID: 'csijs',
         // maxLine: 2,
         logAjaxTrace: true,
-        operationMethod: 'copy',
+        operationMethod: 'upload',
         containerFontSize: '14px',
-        excludeAjaxKeywords: ['julianos']
+        env: 'uat'
+        // excludeAjaxKeywords: ['julianos']
         // customPanelTrigger: true
       });
       const btnError = document.getElementById('btn-error');
@@ -74,10 +76,18 @@
       });
 
       btnRequest.addEventListener('click', () => {
-        axios.post('http://julianos-uat.longfor.com/api/admin/snapshot/make/url', {
-          guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+        axios({
+          method: 'post',
+          url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
+          headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+          withCredentials: true,
+          data: {
+            guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+          }
         })
-        axios.get('http://julianos-uat.longfor.com')
+        axios.get('https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/', {
+          headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+        })
       })
 
       btnTogglePage.addEventListener('click', () => {
