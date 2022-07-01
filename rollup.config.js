@@ -7,7 +7,7 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
 import css from "rollup-plugin-import-css";
 import replace from '@rollup/plugin-replace';
-import autoExternal from 'rollup-plugin-auto-external';
+// import autoExternal from 'rollup-plugin-auto-external';
 
 const config = {
   input: {
@@ -43,6 +43,10 @@ const config = {
       preferBuiltins: true,
       browser: true
     }),
+    commonjs({
+      extensions: ['.js'],
+      ignoreDynamicRequires: true,
+    }),
     replace({
       preventAssignment: true,
       include: ['src/**/*.js'],
@@ -51,20 +55,29 @@ const config = {
     css(),
     babel({
       babelHelpers: 'bundled',
-      exclude: "node_modules/**",
+      // exclude: "node_modules/**",
+      exclude:/node_modules\/(?!sweetalert2)/,
+    "presets": [
+      ["@babel/preset-env"]],
     }),
-    commonjs({
-      extensions: ['.js'],
-      ignoreDynamicRequires: true,
-    }),
+    
     terser(),
-    !process.argv.includes('-w') && autoExternal(),
+    // !process.argv.includes('-w') && autoExternal( ),
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
       port: 80,
       openPage: '/demo/demo.html',
     }),
   ],
+  external:id => {
+    // 需要把sweetalert2打包到库 进行es6转换
+    return id.includes('sweetalert2')?false:id.includes('node_modules')
+    
+  }
+  
+  // external:['nanoid','file-saver','axios','ali-oss','clipboard','toastify-js','sweetalert2']
+
+
 };
 
 export default config;
