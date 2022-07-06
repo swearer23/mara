@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "DEBUG=true rollup -c -w --host localhost.longfor.com --port 443",
-    "build": "rm -rf ./dist && rollup -c",
+    "build": "rm -rf ./dist && rollup -c && rollup --config rollupExternal.config.js",
     "dev": "serve",
     "lint": "eslint ./src",
     "lintfix": "eslint ./src --fix"
