@@ -25,7 +25,7 @@ const outConfig = {
  
   external:id => {
     // 需要把sweetalert2打包到库 进行es6转换
-    return id.includes('sweetalert2')?false:id.includes('node_modules')
+    return (id.includes('sweetalert2')||id.includes('nanoid'))?false:id.includes('node_modules')
   }
 };
 

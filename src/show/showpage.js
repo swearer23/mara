@@ -21,6 +21,9 @@ function ShowPage(report, operation='download', env='prod') {
   this.csiReport = report;
   this.env = env;
   if (operations[operation]) {
+    if(operation === 'copy'){
+      console.error(`mara warning:operationMethod===copy功能即将废弃，请尽快切换成'upload'或者'download'模式`)
+    }
     this.operation = operation
     this.mainBtnText = operations[operation]
   }
