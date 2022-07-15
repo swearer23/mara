@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "1.2.0-copy-warn",
+  "version": "1.2.0-warn-copy",
   "description": "mara是一个前端日志系统, 它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
   "main": "./dist/mara.esm.js",
   "directories": {

@@ -22,7 +22,7 @@ function ShowPage(report, operation='download', env='prod') {
   this.env = env;
   if (operations[operation]) {
     if(operation === 'copy'){
-      console.error(`mara warning:operationMethod===copy功能即将废弃，请尽快切换成'upload'或者'download'模式`)
+      console.warn(`%cmara warning: operationMethod===copy功能即将废弃，请尽快切换成'upload'或'download'模式`, 'font-size: 20px;')
     }
     this.operation = operation
     this.mainBtnText = operations[operation]
