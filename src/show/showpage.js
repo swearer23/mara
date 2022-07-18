@@ -15,10 +15,15 @@ const operations = {
   'report': '上报'
 }
 
+let clipboard = null
+
 function ShowPage(report, operation='download', env='prod') {
   this.csiReport = report;
   this.env = env;
   if (operations[operation]) {
+    if(operation === 'copy'){
+      console.warn(`%cmara warning: operationMethod===copy功能即将废弃，请尽快切换成'upload'或'download'模式`, 'font-size: 20px;')
+    }
     this.operation = operation
     this.mainBtnText = operations[operation]
   }
@@ -62,7 +67,10 @@ const uploadLogs = async env => {
     cancelButtonText: '关闭',
     preConfirm: () => {
       document.querySelector('.swal2-confirm').setAttribute('data-clipboard-text', url)
-      const clipboard = new Clipboard('.swal2-confirm')
+      if(clipboard){
+        clipboard.destroy()
+      }
+      clipboard = new Clipboard('.swal2-confirm')
       clipboard.on('success', function(e) {
         console.log(e)
         Toastify({
@@ -94,7 +102,10 @@ const uploadLogs = async env => {
 const copyLogs = () => {
   const logs = JSON.stringify(readLines(), null, 2)
   document.querySelector('.swal2-confirm').setAttribute('data-clipboard-text', logs)
-  const clipboard = new Clipboard('.swal2-confirm')
+  if(clipboard){
+    clipboard.destroy()
+  }
+  clipboard = new Clipboard('.swal2-confirm')
   clipboard.on('success', function(e) {
     Toastify({
       text: "复制成功",
