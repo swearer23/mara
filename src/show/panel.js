@@ -6,8 +6,8 @@ function Panel(csi) {
 }
 
 Panel.prototype = {
-  init(customPanelTrigger=false, operationMethod, env) {
-    this.showPage = new ShowPage(this.csi.report.bind(this.csi), operationMethod, env);
+  init(customPanelTrigger=false, operationMethod, env, appid) {
+    this.showPage = new ShowPage(this.csi.report.bind(this.csi), operationMethod, env, appid);
 
     if (customPanelTrigger) return
     this.bindDefaultTrigger()

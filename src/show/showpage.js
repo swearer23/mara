@@ -1,5 +1,5 @@
 import { readLines } from '../util/store'
-import { arrIsNull } from '../util/util'
+import { arrIsNull, ts2slug, sign } from '../util/util'
 import { nanoid } from 'nanoid'
 import FileSaver from 'file-saver'
 import Swal from 'sweetalert2'
@@ -17,9 +17,10 @@ const operations = {
 
 let clipboard = null
 
-function ShowPage(report, operation='download', env='prod') {
+function ShowPage(report, operation='download', env='prod', appid) {
   this.csiReport = report;
   this.env = env;
+  this.appid = appid;
   if (operations[operation]) {
     if(operation === 'copy'){
       console.warn(`%cmara warning: operationMethod===copy功能即将废弃，请尽快切换成'upload'或'download'模式`, 'font-size: 20px;')
@@ -29,10 +30,13 @@ function ShowPage(report, operation='download', env='prod') {
   }
 }
 
-const uploadLogs = async env => {
+const uploadLogs = async (env, appid) => {
   const logs = readLines().map(item => `${JSON.stringify(item, null, 2)}\n`);
   const blob = new Blob(logs, {type: "text/plain;charset=utf-8"});
   const filename = `${nanoid()}.dat`
+  const timestamp = new Date().getTime()
+  const slug = ts2slug(timestamp)
+  const signature = sign(appid, timestamp)
   let stsURL, gaiaKey
   if (env === 'prod') {
     stsURL = 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/alioss/sts'
@@ -40,6 +44,9 @@ const uploadLogs = async env => {
   } else {
     stsURL = '//api-uat.longfor.com/julianos-uat/api/admin/alioss/sts'
     gaiaKey = '791f6690-0714-445f-9273-78a3199622d2'
+  }
+  if (appid) {
+    stsURL = `${stsURL}/${slug}/${signature}`
   }
   const { Credentials } = (await axios({
     method: "get",
