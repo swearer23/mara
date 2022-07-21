@@ -31,9 +31,6 @@ class Mara {
     if (!opts.feID) {
       throw Error('feID必传');
     }
-    if (!opts.report || typeof opts.report !== 'function') {
-      throw Error('请填写自定义上报函数');
-    }
   }
 
   // 初始化
