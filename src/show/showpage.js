@@ -17,44 +17,52 @@ const operations = {
 
 let clipboard = null
 
-function ShowPage(report, operation='download', env='prod', appid) {
+function ShowPage(report, opts) {
   this.csiReport = report;
-  this.env = env;
-  this.appid = appid;
-  if (operations[operation]) {
-    if(operation === 'copy'){
+  this.env = opts.env || 'prod';
+  this.appid = opts.appid;
+  this.appname = opts.feID;
+  this.operation = opts.operationMethod || 'download'
+  if (operations[this.operation]) {
+    if(this.operation === 'copy'){
       console.warn(`%cmara warning: operationMethod===copy功能即将废弃，请尽快切换成'upload'或'download'模式`, 'font-size: 20px;')
     }
-    this.operation = operation
-    this.mainBtnText = operations[operation]
+    this.mainBtnText = operations[this.operation]
   }
 }
 
-const uploadLogs = async (env, appid) => {
+const uploadLogs = async (env, appid, appname) => {
   const logs = readLines().map(item => `${JSON.stringify(item, null, 2)}\n`);
   const blob = new Blob(logs, {type: "text/plain;charset=utf-8"});
   const filename = `${nanoid()}.dat`
   const timestamp = new Date().getTime()
   const slug = ts2slug(timestamp)
   const signature = sign(appid, timestamp)
-  let stsURL, gaiaKey
+  let stsHost, stsPath, stsURL, gaiaKey
   if (env === 'prod') {
-    stsURL = 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/alioss/sts'
+    stsHost = 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/'
     gaiaKey = 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'
   } else {
-    stsURL = '//api-uat.longfor.com/julianos-uat/api/admin/alioss/sts'
+    stsHost = '//api-uat.longfor.com/julianos-uat/'
     gaiaKey = '791f6690-0714-445f-9273-78a3199622d2'
   }
-  if (appid) {
-    stsURL = `${stsURL}/${slug}/${signature}`
+  const headers = {
+    'X-Gaia-Api-Key': gaiaKey
   }
+  if (appid) {
+    stsPath = 'api/mara/alioss/sts'
+    headers['x-mara-signature'] = signature,
+    headers['x-mara-slug'] = slug,
+    headers['x-mara-app-name'] = appname
+  } else {
+    stsPath = 'api/admin/alioss/sts'
+  }
+  stsURL = `${stsHost}${stsPath}`
   const { Credentials } = (await axios({
     method: "get",
     url: stsURL,
     withCredentials: true,
-    headers: {
-      'X-Gaia-Api-Key': gaiaKey
-    }
+    headers: headers
   })).data
   const client = new OSS({
     region: 'oss-cn-beijing',
@@ -168,7 +176,7 @@ ShowPage.prototype.createPage = function () {
       cancelButtonText: '关闭',
       preConfirm: () => {
         if (this.operation === 'upload') {
-          return uploadLogs(this.env)
+          return uploadLogs(this.env, this.appid, this.appname)
         } else if (this.operation === 'copy') {
           return copyLogs()
         } else {
