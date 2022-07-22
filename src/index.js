@@ -1,19 +1,18 @@
-import { getUserAgent, Device } from './util/device';
 import Panel from './show/panel';
 import WinErr from './probe/winerr';
 import AjaxErr from './probe/ajaxerr';
 import FetchErr from './probe/fetcherr';
 import Forms from './form/forms';
-import { readLines } from './util/store';
-import { arrIsNull } from './util/util';
+import { readLines } from './util/storage';
+import { randomFillSync } from 'crypto'
 
-const letIE9 = () => {
-  getUserAgent();
-  const { browser } = Device;
-  const { name } = browser;
-  const version = parseFloat(browser.version);
-  return name === 'ie' && version < 9;
-};
+if (!window.crypto) {
+  window.crypto = {
+    getRandomValues(buffer) {
+      return randomFillSync(buffer)
+    }
+  }
+}
 
 /**
  * @param opts.feID: 项目Id， 必传
@@ -35,7 +34,6 @@ class Mara {
 
   // 初始化
   init(opts) {
-    if (this.inited || letIE9()) return;
     try {
       this.opts = opts;
       const formObj = new Forms(opts.feID, opts.maxLine);
@@ -58,18 +56,16 @@ class Mara {
 
   // 自定义错误
   probe(...msg) {
-    if (letIE9()) return;
     this.forms.addLine({
-      etype: 'custom error',
+      etype: 'CUSTOM_LOG',
       msg,
     });
   }
 
   // 数据上报
   report() {
-    if (letIE9()) return;
     const lines = readLines();
-    if (arrIsNull(lines)) return;
+    if (!lines.length) return;
     this.opts.report(lines);
   }
 

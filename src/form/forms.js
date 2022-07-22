@@ -1,15 +1,30 @@
-import Table from './table.js';
+import Storage from '../util/storage.js';
+import { nanoid } from 'nanoid';
 
+const Line = {
+  pid: '',
+  index: '',
+  time: '',
+  ua: '',
+  etype: '',
+  msg: '',
+  url: '',
+  other: ''
+};
 const Forms = function (feID, maxLine) {
-  this.errTable = new Table(feID, 'err', maxLine);
+  this.storage = new Storage(feID, maxLine);
 };
 Forms.prototype = {
   addLine(data) {
-    // const table = (type === 'err' || type === 'error' || type === 'ERROR') ? this.errTable : this.norTable;
-    const table = this.errTable;
+    const initLine = {
+      pid: nanoid(),
+      time: Date.now(),
+      ua: navigator.userAgent,
+      url: location ? location.href : ''
+    };
     // 防止阻塞
     setTimeout(() => {
-      table.addLine(data);
+      this.storage.addLine(Object.assign(initLine, data));
     }, 0);
   },
 };

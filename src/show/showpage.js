@@ -1,5 +1,5 @@
-import { readLines } from '../util/store'
-import { arrIsNull, ts2slug, sign } from '../util/util'
+import { readLines } from '../util/storage'
+import { ts2slug, sign } from '../util/util'
 import { nanoid } from 'nanoid'
 import FileSaver from 'file-saver'
 import Swal from 'sweetalert2'
@@ -156,7 +156,7 @@ const download = () => {
 // 添加事件侦听
 ShowPage.prototype.createPage = function () {
   const logs = readLines()
-  if (arrIsNull(logs)) {
+  if (!logs.length) {
     Swal.fire({
       title: '暂无异常',
       text: '稍后窗口会自动关闭',

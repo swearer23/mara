@@ -31,7 +31,7 @@ test('mara probe', () => {
 
   mara.probe('winerr')
   jest.advanceTimersByTime(0)
-  expect(mara.forms.errTable.info.length).toBe(1)
+  expect(mara.forms.storage.__pool__.length).toBe(1)
 })
 
 test('mara toggle panel', () => {

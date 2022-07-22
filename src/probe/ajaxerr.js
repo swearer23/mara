@@ -7,7 +7,7 @@ const AjaxErr = function (forms) {
 
 const addAjaxError = (forms, status, args) => {
   forms.addLine({
-    etype: 'ajax error',
+    etype: 'XHR_ERROR',
     msg: status,
     js: args.join(' :')
   });
@@ -15,7 +15,7 @@ const addAjaxError = (forms, status, args) => {
 
 const addAjaxTrace = (forms, status, args) => {
   forms.addLine({
-    etype: 'ajax trace',
+    etype: 'XHR_TRACE',
     msg: status,
     js: args.join(':')
   });

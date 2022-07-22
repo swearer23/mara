@@ -21,9 +21,9 @@ const outConfig = {
     externalLiveBindings: false,
     freeze: false
   }],
-  external:id => {
-    return id.includes('node_modules')
-  }
+  // external:id => {
+  //   return id.includes('node_modules')
+  // }
 
 };
 
