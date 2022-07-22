@@ -44,8 +44,7 @@ const baseConfig = {
     terser(),
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
-      host: 'rollup.longfor.com',
-      port: 80,
+      port: 8888,
       openPage: '/demo/demo.html',
     }),
   ],
