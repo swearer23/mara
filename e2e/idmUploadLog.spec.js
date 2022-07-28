@@ -1,9 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 
-test.use({
-  headless: false
-})
 
 test('calling sts api using invalid idm token', async ({ page }) => {
   await page.goto('http://localhost.longfor.com:8888/demo/demo.html');

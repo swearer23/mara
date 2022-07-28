@@ -68,6 +68,7 @@
       // customPanelTrigger: true
     }
     const config = { ...defaultConfig, ...inputConfig }
+    console.log(config)
     window.onload = () => {
       // axios.defaults.withCredentials = true;
       const csi = new Mara(config);

@@ -6,7 +6,7 @@ export default class Storage {
     } else {
       this.__pool__ = []
       this.feid = feid
-      this.maxLine = maxLine || 20
+      this.maxLine = parseInt(maxLine) || 20
       Storage.instance = this
     }
   }
