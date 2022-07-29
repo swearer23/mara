@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 
 
-test('calling sts api using invalid idm token', async ({ page }) => {
+test('使用空cookie调用IDM鉴权方式的OSS上传接口', async ({ page }) => {
   await page.goto('http://localhost.longfor.com:8888/demo/demo.html');
   page.on('request', req => {
     expect(req.url()).toContain('admin/alioss/sts')
@@ -21,7 +21,7 @@ test('calling sts api using invalid idm token', async ({ page }) => {
   await page.waitForTimeout(1000)
 });
 
-test('calling sts api use valid idm token', async ({ page, browser }) => {
+test('使用有效cookie调用IDM鉴权方式的OSS上传接口', async ({ page, browser }) => {
   const context = await browser.newContext();
   context.clearCookies()
   const redirectURL = 'http://localhost.longfor.com:8888/demo/demo.html'

@@ -8,27 +8,19 @@ import OSS from 'ali-oss'
 import Clipboard from 'clipboard'
 import Toastify from 'toastify-js'
 
-const operations = {
-  'download': '下载',
-  'copy': '复制',
-  'upload': '上传',
-  'report': '上报'
-}
-
 let clipboard = null
 
+const operations = {
+  'download': '下载',
+  'upload': '上传',
+}
 function ShowPage(report, opts) {
+  this.operation = opts.operationMethod || 'download'
+  this.mainBtnText = operations[this.operation]
   this.csiReport = report;
   this.env = opts.env || 'prod';
   this.appid = opts.appid;
   this.appname = opts.feID;
-  this.operation = opts.operationMethod || 'download'
-  if (operations[this.operation]) {
-    if(this.operation === 'copy'){
-      console.warn(`%cmara warning: operationMethod===copy功能即将废弃，请尽快切换成'upload'或'download'模式`, 'font-size: 20px;')
-    }
-    this.mainBtnText = operations[this.operation]
-  }
 }
 
 const uploadLogs = async (env, appid, appname) => {

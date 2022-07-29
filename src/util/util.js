@@ -1,4 +1,4 @@
-import md5 from 'md5'
+import CryptoJS from 'crypto-js'
 
 const ts2slug = timestamp => {
   const currSegmentsValidChar = seg => (seg >= 65 && seg < 91) || (seg >= 97 && seg < 123)
@@ -31,7 +31,7 @@ const ts2slug = timestamp => {
 }
 
 const sign = (appid, timestamp) => {
-  return md5(`${appid}${timestamp}`);
+  return CryptoJS.MD5(`${appid}${timestamp}`);
 }
 
 export {

@@ -1,7 +1,7 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 
-test('default config for apikey/secret way of uploading winerr log', async ({ page }) => {
+test('调用apikey/secret方式鉴权的OSS上传接口，上传JS异常日志', async ({ page }) => {
   let reqCount = 0
   await page.goto('http://localhost.longfor.com:8888/demo/demo.html?appid=945c1315b608be26bb32d15db8f6c806');
   page.on('request', req => {

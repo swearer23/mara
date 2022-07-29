@@ -1,11 +1,11 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 
-test.use({
-  headless: false
-})
+// test.use({
+//   headless: false
+// })
 
-test('max line setting test case', async ({ page }) => {
+test('测试最大日志行数参数', async ({ page }) => {
   page.waitForEvent('download')
   await page.goto('http://localhost.longfor.com:8888/demo/demo.html?appid=945c1315b608be26bb32d15db8f6c806&maxLine=2&operationMethod=download');
   await page.click('#btn-error', {

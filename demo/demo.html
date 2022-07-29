@@ -49,8 +49,9 @@
       <div id="btn-custom-msg" class="btn">自定义日志信息</div>
     </div>
   </body>
-  <script src="../dist/mara.umd.js"></script>
+  <script src="../dist/mara.umd.js" type="module"></script>
   <script type="module">
+    // import Mara from "../dist/mara.esm.js";
     const params = new URL(location.href).searchParams;
     const inputConfig = {}
     for (const [key, value] of params.entries()) {

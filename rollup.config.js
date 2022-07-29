@@ -1,7 +1,18 @@
 import * as path from "path";
-import baseConfig from './rollup.base.config.js'
+import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import { babel } from '@rollup/plugin-babel';
+import { terser } from "rollup-plugin-terser";
+import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload'
+import css from "rollup-plugin-import-css";
+import replace from '@rollup/plugin-replace';
+import autoExternal from 'rollup-plugin-auto-external';
 
-const outConfig = {
+const config = {
+  input: {
+    index: path.resolve(__dirname, 'src/index.js'),
+  },
   output: [{
     dir: path.resolve(__dirname, 'dist/'),
     entryFileNames: `mara.umd.js`,
@@ -21,12 +32,39 @@ const outConfig = {
     externalLiveBindings: false,
     freeze: false
   }],
-  // external:id => {
-  //   return id.includes('node_modules')
-  // }
-
+  treeshake: {
+    moduleSideEffects: 'no-external',
+    propertyReadSideEffects: false,
+    tryCatchDeoptimization: false,
+  },
+  plugins: [
+    process.argv.indexOf('-w') > -1 && livereload(),
+    nodeResolve({
+      preferBuiltins: true,
+      browser: true
+    }),
+    replace({
+      preventAssignment: true,
+      include: ['src/**/*.js'],
+      'process.env.DEBUG': process.env.DEBUG || false
+    }),
+    css(),
+    babel({
+      babelHelpers: 'bundled',
+      exclude: "node_modules/**",
+    }),
+    commonjs({
+      extensions: ['.js'],
+      ignoreDynamicRequires: true,
+    }),
+    terser(),
+    process.argv.indexOf('-w') === -1 && autoExternal(),
+    process.argv.indexOf('-w') !== -1 && serve({
+      open: true,
+      port: 8888,
+      openPage: '/demo/demo.html',
+    }),
+  ],
 };
 
-const config = Object.assign({},baseConfig, outConfig)
-// console.log('config1',config)
 export default config;

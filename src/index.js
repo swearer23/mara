@@ -4,15 +4,15 @@ import AjaxErr from './probe/ajaxerr';
 import FetchErr from './probe/fetcherr';
 import Forms from './form/forms';
 import { readLines } from './util/storage';
-import { randomFillSync } from 'crypto'
+// import { randomFillSync } from 'crypto'
 
-if (!window.crypto) {
-  window.crypto = {
-    getRandomValues(buffer) {
-      return randomFillSync(buffer)
-    }
-  }
-}
+// if (!window.crypto) {
+//   window.crypto = {
+//     getRandomValues(buffer) {
+//       return randomFillSync(buffer)
+//     }
+//   }
+// }
 
 /**
  * @param opts.feID: 项目Id， 必传
@@ -21,14 +21,28 @@ if (!window.crypto) {
 class Mara {
   constructor(opts = {}) {
     opts.report = opts.report || (() => {console.warn('report needs to be defined')});
+    opts.operationMethod = opts.operationMethod || 'download';
     this.inited = false;
-    this.checkParams(opts);
-    this.init(opts);
+    try {
+      this.checkParams(opts);
+      this.init(opts);
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   checkParams(opts) {
+    const operations = ['download', 'upload']
+
     if (!opts.feID) {
       throw Error('feID必传');
+    }
+    if (!operations.includes(opts.operationMethod)) {
+      const ERROR_MSG = [
+        `mara warning: the operationMethod ${opts.operationMethod} is not supported`,
+        `please select from either 'download' or 'upload'`
+      ]
+      throw Error(ERROR_MSG.join('\n'))
     }
   }
 
