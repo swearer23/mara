@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "1.3.0-alpha",
+  "version": "1.3.0-beta",
   "description": "mara是一个前端日志系统, 它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
   "main": "./dist/mara.umd.js",
   "directories": {

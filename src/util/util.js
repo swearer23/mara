@@ -31,7 +31,7 @@ const ts2slug = timestamp => {
 }
 
 const sign = (appid, timestamp) => {
-  return CryptoJS.MD5(`${appid}${timestamp}`);
+  return CryptoJS.MD5(`${appid}${timestamp}`).toString();
 }
 
 export {

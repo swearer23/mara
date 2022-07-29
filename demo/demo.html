@@ -49,7 +49,7 @@
       <div id="btn-custom-msg" class="btn">自定义日志信息</div>
     </div>
   </body>
-  <script src="../dist/mara.umd.js" type="module"></script>
+  <script src="../dist/mara.umd.js"></script>
   <script type="module">
     // import Mara from "../dist/mara.esm.js";
     const params = new URL(location.href).searchParams;
@@ -59,12 +59,12 @@
     }
     const defaultConfig = {
       feID: 'lafengH5',
-      // appid: '945c1315b608be26bb32d15db8f6c806',
+      appid: '945c1315b608be26bb32d15db8f6c806',
       // maxLine: 2,
       // logAjaxTrace: true,
       operationMethod: 'upload',
       containerFontSize: '14px',
-      env: 'uat'
+      env: 'prod'
       // excludeAjaxKeywords: ['julianos']
       // customPanelTrigger: true
     }
