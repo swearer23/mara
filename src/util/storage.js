@@ -1,53 +1,30 @@
+export default class Storage {
 
-class Storage {
-
-  constructor() {
+  constructor(feid, maxLine) {
     if (Storage.instance) {
       return Storage.instance
     } else {
-      this.__pool__ = {}
+      this.__pool__ = []
+      this.feid = feid
+      this.maxLine = parseInt(maxLine) || 20
       Storage.instance = this
     }
   }
 
-  setItem(key, value) {
-    this.__pool__[key] = value;
+  addLine (value) {
+    if (this.__pool__.length >= this.maxLine) {
+      this.__pool__.shift()
+    }
+    this.__pool__.push(Object.assign({feid: this.feid}, value));
   }
 
-  getItem(key) {
-    return this.__pool__[key]
-  }
-
-  remove(keyName) {
-    this.__pool__[keyName] = null
+  readLines () {
+    return this.__pool__
   }
 }
 
 Storage.instance = null
 
-const storage = new Storage();
-const debug = process.env.DEBUG
-
-const write = (keyName, keyValue) => {
-  try {
-    storage.setItem(keyName, keyValue);
-    if (debug) localStorage.setItem(keyName, keyValue)
-  } catch (e) {console.error(e)}
-};
-
-const read = (keyName) => {
-  if (storage.getItem) return storage.getItem(keyName);
-  return null;
-};
-
-const remove = (keyName) => {
-  try {
-    storage && storage.removeItem(keyName);
-  } catch (e) {}
-};
-
-export {
-  write,
-  read,
-  remove
-};
+export const readLines = () => {
+  return Storage.instance.readLines()
+}

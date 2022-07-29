@@ -6,10 +6,10 @@ function Panel(csi) {
 }
 
 Panel.prototype = {
-  init(customPanelTrigger=false, operationMethod, env) {
-    this.showPage = new ShowPage(this.csi.report.bind(this.csi), operationMethod, env);
+  init(opts) {
+    this.showPage = new ShowPage(this.csi.report.bind(this.csi), opts);
 
-    if (customPanelTrigger) return
+    if (opts.customPanelTrigger) return
     this.bindDefaultTrigger()
   },
   onTapQueue (e, maxLength) {

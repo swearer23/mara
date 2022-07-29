@@ -37,14 +37,14 @@ const baseConfig = {
       babelHelpers: 'bundled',
       // exclude: "node_modules/**",
       // exclude:/node_modules\/(?!sweetalert2)/,
-    "presets": [
-      ["@babel/preset-env"]],
+    // "presets": [
+    //   ["@babel/preset-env"]],
     }),
     
     terser(),
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
-      port: 80,
+      port: 8888,
       openPage: '/demo/demo.html',
     }),
   ],

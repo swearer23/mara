@@ -3,7 +3,7 @@
 // 探针
 const probe = (forms, message, url, line, char, err) => {
   forms.addLine({
-    etype: 'win error',
+    etype: 'JS_ERROR',
     msg: `${message} \n ${err && err.stack}`,
     js: `${url}:${line}:${char}`,
   });
