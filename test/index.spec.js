@@ -43,32 +43,3 @@ test('mara toggle panel', () => {
   mara.showPanel()
   expect(mara.panel.toggleShow).toHaveBeenCalled()
 })
-
-test('mara report test', () => {
-  const opts = {
-    feID: 'lafengH5',
-    appid: '945c1315b608be26bb32d15db8f6c806',
-    report: jest.fn() 
-  }
-  jest.spyOn(opts, 'report')
-  const mara = new Mara(opts)
-  mara.probe('winerr')
-  mara.report()
-  expect.extend({
-    toHaveOneLine(received, expected) {
-      const pass = received.length === 1 && received[0].msg[0] === expected
-      if (pass) {
-        return {
-          message: () => `expected ${received} to have one line with msg ${expected}`,
-          pass: true
-        }
-      } else {
-        return {
-          message: () => `expected ${received} to have one line with msg ${expected}`,
-          pass: false
-        }
-      }
-    }
-  })
-  expect(opts.report).toHaveBeenCalledWith(expect.toHaveOneLine('winerr'))
-})

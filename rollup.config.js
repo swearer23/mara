@@ -9,20 +9,8 @@ import css from "rollup-plugin-import-css";
 import replace from '@rollup/plugin-replace';
 import autoExternal from 'rollup-plugin-auto-external';
 
-const config = {
-  input: {
-    index: path.resolve(__dirname, 'src/index.js'),
-  },
-  output: [{
-    dir: path.resolve(__dirname, 'dist/'),
-    entryFileNames: `mara.umd.js`,
-    chunkFileNames: 'chunks/dep-[hash].js',
-    format: 'umd',
-    name: 'Mara',
-    exports: 'default',
-    externalLiveBindings: false,
-    freeze: false
-  }, {
+const output = [
+  {
     dir: path.resolve(__dirname, 'dist/'),
     entryFileNames: `mara.esm.js`,
     chunkFileNames: 'chunks/dep-[hash].js',
@@ -31,7 +19,27 @@ const config = {
     exports: 'named',
     externalLiveBindings: false,
     freeze: false
-  }],
+  }
+]
+
+if (process.argv.indexOf('-w') === -1) {
+  output.push({
+    dir: path.resolve(__dirname, 'dist/'),
+    entryFileNames: `mara.umd.js`,
+    chunkFileNames: 'chunks/dep-[hash].js',
+    format: 'umd',
+    name: 'Mara',
+    exports: 'default',
+    externalLiveBindings: false,
+    freeze: false
+  })
+}
+
+const config = {
+  input: {
+    index: path.resolve(__dirname, 'src/index.js'),
+  },
+  output: output,
   treeshake: {
     moduleSideEffects: 'no-external',
     propertyReadSideEffects: false,

@@ -43,22 +43,21 @@
     <h3 class="title">csijs前端日志系统，测试网页地址</h3>
     <div class="show">
       <div id="btn-error" class="btn">制造错误</div>
-      <div id="btn-report" class="btn">发送日志</div>
       <div id="btn-request" class="btn">发送请求</div>
-      <div id="btn-toggle-showpage" class="btn">自定义触发弹窗</div>
-      <div id="btn-custom-msg" class="btn">自定义日志信息</div>
+      <div id="btn-set-user" class="btn">设置用户ID(demoUser)</div>
+      <div id="btn-custom-msg" class="btn">发送实时日志</div>
     </div>
   </body>
-  <script src="../dist/mara.umd.js"></script>
+  <!-- <script src="../dist/mara.umd.js"></script> -->
   <script type="module">
-    // import Mara from "../dist/mara.esm.js";
+    import Mara from "/src/index.js";
     const params = new URL(location.href).searchParams;
     const inputConfig = {}
     for (const [key, value] of params.entries()) {
       inputConfig[key] = value
     }
     const defaultConfig = {
-      feID: 'lafengH5',
+      appname: 'lafengH5',
       appid: '945c1315b608be26bb32d15db8f6c806',
       // maxLine: 2,
       // logAjaxTrace: true,
@@ -73,22 +72,19 @@
     console.log(config)
     window.onload = () => {
       // axios.defaults.withCredentials = true;
-      const csi = new Mara(config);
+      const csi = new Mara(config.appname, config.appid);
       const btnError = document.getElementById('btn-error');
-      const btnReport = document.getElementById('btn-report');
       const btnRequest = document.getElementById('btn-request');
-      const btnTogglePage = document.getElementById('btn-toggle-showpage');
+      const btnSetUser = document.getElementById('btn-set-user');
       const btnCustomMsg = document.getElementById('btn-custom-msg');
       btnError.addEventListener('click', () => {
         test(123);
-      });
-      btnReport.addEventListener('click', () => {
-        csi.report();
       });
 
       btnRequest.addEventListener('click', () => {
         axios({
           method: 'post',
+          timeout: 1000,
           url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
           headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
           withCredentials: true,
@@ -101,12 +97,12 @@
         })
       })
 
-      btnTogglePage.addEventListener('click', () => {
-        csi.showPanel()
+      btnSetUser.addEventListener('click', () => {
+        csi.setUser('demoUser')
       })
 
       btnCustomMsg.addEventListener('click', () => {
-        csi.probe('hello world', {a: 1, b: 2, c: {d: 3, e: 5}})
+        csi.probe('hello world', 'the result of XXX is', 23, {a: 1, b: 2, c: {d: 3, e: 5}}, {f: 6, g: 7})
       })
     }
     

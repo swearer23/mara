@@ -1,5 +1,6 @@
 const FetchErr = function (forms) {
   this.forms = forms;
+  this.probe()
 };
 FetchErr.prototype.probe = function () {
   if (!window.fetch) return;
@@ -19,7 +20,7 @@ FetchErr.prototype.probe = function () {
         const status = `${resp.status}`;
         if (!/^2[0-9]{1,3}/gi.test(status) && +status !== 0) {
           this.forms.addLine({
-            etype: 'fetch error',
+            etype: 'API_ERROR',
             msg: `status:${resp.status}`,
             js: `${method} :${url}`,
           });
@@ -34,7 +35,7 @@ FetchErr.prototype.probe = function () {
           msg = err && err.message ? err.message : err;
         }
         this.forms.addLine({
-          etype: 'fetch error',
+          etype: 'API_ERROR',
           msg,
           js: `${method} :${url}`,
         });

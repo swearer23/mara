@@ -1,116 +1,111 @@
 import { nanoid } from "nanoid";
 
 const xhrs = {};
-const AjaxErr = function (forms) {
-  this.forms = forms;
-};
 
-const addAjaxError = (forms, status, args) => {
-  forms.addLine({
-    etype: 'XHR_ERROR',
-    msg: status,
-    js: args.join(' :')
-  });
+const tryStringify = obj => {
+  try {
+    return JSON.stringify(obj, null, 2)
+  } catch (e) {
+    return 'not_serializable'
+  }
 }
 
-const addAjaxTrace = (forms, status, args) => {
-  forms.addLine({
-    etype: 'XHR_TRACE',
-    msg: status,
-    js: args.join(':')
-  });
+const initXhr = () => {
+  return {
+    headers: {},
+    payload: {},
+    response: {},
+    xhrObject: null
+  }
 }
 
-// overwrite XMLHttpRequest
-AjaxErr.prototype.probe = function (logAjaxTrace = false, excludeKeywords) {
-  const that = this;
-  this.logAjaxTrace = logAjaxTrace
-  this.excludeKeywords = excludeKeywords || []
-  const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
+class AjaxErr {
+  constructor (storage) {
+    this.storage = storage
+    this.probe()
+  }
 
-  const excludeURLFilter = url => {
-    for (let i = 0; i < this.excludeKeywords.length; i++) {
-      if (url.indexOf(this.excludeKeywords[i]) !== -1) {
-        return true
+  probe () {
+    const that = this;
+    const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
+
+    XMLHttpRequest.prototype.open = function() {
+      this.__xhrid = nanoid();
+      xhrs[this.__xhrid] = initXhr();
+      that.addListener(this, arguments);
+      open.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.setRequestHeader = function() {
+      if (!this.__xhrid) return setRequestHeader.apply(this, arguments);
+      const [key, value] = [...arguments]
+      xhrs[this.__xhrid].headers[key] = value;
+      setRequestHeader.apply(this, arguments);
+    }
+
+    XMLHttpRequest.prototype.send = function() {
+      if (!this.__xhrid) return send.apply(this, arguments);
+      xhrs[this.__xhrid].payload = [...arguments];
+      send.apply(this, arguments);
+    }
+  }
+
+  addListener (xhr, args) {
+    const that = this
+    if (xhrs[xhr.__xhrid].xhrObject) return;
+    xhrs[xhr.__xhrid].xhrObject = { xhr }
+
+    const { ontimeout } = xhr;
+
+    xhr.addEventListener('loadend', () => {
+      console.log(xhr)
+      const { statusText, status, response } = xhr;
+      let { payload, headers } = xhrs[xhr.__xhrid]
+      const context = {
+        statusText,
+        payload,
+        headers,
+        status,
+        response
+      }
+      if (parseInt(status) === 0) return
+      if (!/^2[0-9]{1,3}/ig.test(status)) {
+        that.addAjaxError(context, [...args]);
+      }
+    })
+
+    xhr.addEventListener('error', () => {
+      that.addAjaxError({
+        networkError: true,
+        statusText: xhr.statusText || 'network error',
+      }, [...args]);
+    })
+
+    xhr.ontimeout = (...params) => {
+      that.addAjaxError({
+        networkError: true,
+        statusText: xhr.statusText
+      }, [...args]);
+      ontimeout && ontimeout.apply(this, params);
+    };
+  }
+
+  addAjaxError (context, args) {
+    const line = {
+      etype: 'API_ERROR',
+      networkError: context.networkError || false,
+      status: context.statusText,
+      statusCode: context.status,
+      request: {
+        method: args[0],
+        url: args[1]
       }
     }
-    return false
+    context.payload && (line.payload = tryStringify(context.payload))
+    context.response && (line.response= tryStringify(context.response))
+    context.headers && (line.headers = tryStringify(context.headers))
+    this.storage.addLine(line);
   }
-  
-  XMLHttpRequest.prototype.open = function() {
-    const args = [...arguments]
-    if (args[1] && excludeURLFilter(args[1])) return open.apply(this, arguments)
-    const xhrid = nanoid();
-    this.__xhrid = xhrid;
-    that.addListener(this, arguments);
-    open.apply(this, arguments);
-  };
-
-  XMLHttpRequest.prototype.setRequestHeader = function() {
-    if (!this.__xhrid) return setRequestHeader.apply(this, arguments);
-    const [key, value] = [...arguments]
-    if (key.toLowerCase() === 'content-type' && value.toLowerCase().includes('application/json')) {
-      xhrs[this.__xhrid].recordPayload = true;
-    }
-    setRequestHeader.apply(this, arguments);
-  }
-
-  XMLHttpRequest.prototype.send = function() {
-    if (!this.__xhrid) return send.apply(this, arguments);
-    if (xhrs[this.__xhrid].recordPayload) {
-      xhrs[this.__xhrid].payload = [...arguments];
-    }
-    send.apply(this, arguments);
-  }
-};
-
-AjaxErr.prototype.addListener = function (xhr, args) {
-  if (xhrs[xhr.__xhrid]) return;
-  xhrs[xhr.__xhrid] = { xhr }
-
-  const { ontimeout } = xhr;
-
-  xhr.addEventListener('loadend', () => {
-    const status = xhr.status
-    let payload = xhrs[xhr.__xhrid].payload || {}
-    try {
-      payload = JSON.parse(payload)
-    } catch (err) {
-      payload = payload
-    }
-    let response
-    try {
-      response = JSON.parse(xhr.response)
-    } catch (err) {
-      response = xhr.response
-    }
-    const context = {
-      status,
-      payload,
-      response
-    }
-    if (parseInt(status) === 0) return
-    if (!/^2[0-9]{1,3}/ig.test(status)) {
-      addAjaxError(this.forms, context, [...args]);
-    } else {
-      if (this.logAjaxTrace)
-        addAjaxTrace(this.forms, context, [...args]);
-    }
-  })
-
-  xhr.addEventListener('error', () => {
-    addAjaxError(this.forms, xhr.status || 'networkError', [...args]);
-  })
-
-  xhr.ontimeout = (...params) => {
-    this.forms.addLine({
-      etype: 'ajax error',
-      msg: `timeout ${xhr.status}`,
-      js: args.join(' :'),
-    });
-
-    ontimeout && ontimeout.apply(this, params);
-  };
-};
+}
 
 export default AjaxErr;

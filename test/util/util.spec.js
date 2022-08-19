@@ -1,5 +1,5 @@
 import { ts2slug, sign } from "../../src/util/util";
-import md5 from 'md5'
+import CryptoJS from 'crypto-js'
 
 test("ts2slug test cases", () => {
   function randomDate(start, end) {
@@ -24,5 +24,5 @@ test("ts2slug test cases", () => {
 
 test("sign test case", () => {
   const timestamp = new Date().getTime()
-  expect(md5(`appid${timestamp}`)).toEqual(sign('appid', timestamp))
+  expect(CryptoJS.MD5(`appid${timestamp}`).toString()).toEqual(sign('appid', timestamp))
 })

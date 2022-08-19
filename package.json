@@ -8,8 +8,8 @@
   },
   "scripts": {
     "start": "DEBUG=true rollup -c -w",
+    "dev": "vite --port 8888",
     "build": "rm -rf ./dist && rollup -c && rollup --config rollup.all.config.js",
-    "dev": "serve",
     "lint": "eslint ./src",
     "lintfix": "eslint ./src --fix",
     "test:unit": "jest",
@@ -49,7 +49,8 @@
     "rollup-plugin-import-css": "^3.0.3",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup-plugin-terser": "^7.0.2",
+    "vite": "^3.0.6"
   },
   "dependencies": {
     "ali-oss": "^6.17.1",
