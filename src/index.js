@@ -42,11 +42,11 @@ class Mara {
   }
 
   init() {
-    this.storage = new Storage(this.appname, this.appid, this.sessionId)
+    this.storage = new Storage(this.appname, this.appid, this.sessionId, this.env)
     new WinErr(this.storage)
     new AjaxErr(this.storage)
     new FetchErr(this.storage)
-    new performance(this.storage)   
+    new performance(this.storage)
   }
 
   setUser(userid) {
@@ -56,7 +56,7 @@ class Mara {
   // 自定义错误
   probe(eventTag, ...message) {
     if (eventTag) {
-      if (typeof msg !== 'object') {
+      if (typeof message === 'object') {
         message = JSON.stringify(message, null, 2)
       }
       this.storage.addLine({

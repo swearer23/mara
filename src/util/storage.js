@@ -3,7 +3,7 @@ import axios from 'axios'
 import { getAxiosConfig } from '../util/util'
 
 export default class Storage {
-  constructor(appname, appid, sessionId) {
+  constructor(appname, appid, sessionId, env) {
     if (Storage.instance) {
       return Storage.instance
     } else {
@@ -11,6 +11,7 @@ export default class Storage {
       this.appname = appname
       this.appid = appid
       this.sessionId = sessionId
+      this.env = env
       this.userid = null
       this.#startPolling()
       Storage.instance = this
@@ -23,13 +24,18 @@ export default class Storage {
  
   #readLines () {
     let tempLines = []
-    if (this.__pool__.length > 5) {
-      for(let time = 0; time < 5; time++) {
-        tempLines.push(this.__pool__.shift())
-      }
-    } else {
+    if (this.env === 'prod') {
       tempLines = this.__pool__
       this.__pool__ = []
+    } else {
+      if (this.__pool__.length > 5) {
+        for(let time = 0; time < 5; time++) {
+          tempLines.push(this.__pool__.shift())
+        }
+      } else {
+        tempLines = this.__pool__
+        this.__pool__ = []
+      }
     }
     return tempLines
   }
