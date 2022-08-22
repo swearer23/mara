@@ -1,4 +1,4 @@
-import CryptoJS from 'crypto-js'
+import MD5 from 'crypto-js/md5'
 
 const ts2slug = timestamp => {
   const currSegmentsValidChar = seg => (seg >= 65 && seg < 91) || (seg >= 97 && seg < 123)
@@ -31,7 +31,7 @@ const ts2slug = timestamp => {
 }
 
 const sign = (appid, timestamp) => {
-  return CryptoJS.MD5(`${appid}${timestamp}`).toString();
+  return MD5(`${appid}${timestamp}`).toString();
 }
 
 const getAxiosConfig = (env, method, path, data, app) => {

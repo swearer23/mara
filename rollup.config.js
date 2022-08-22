@@ -7,7 +7,6 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
 import css from "rollup-plugin-import-css";
 import replace from '@rollup/plugin-replace';
-import autoExternal from 'rollup-plugin-auto-external';
 
 const output = [
   {
@@ -66,7 +65,6 @@ const config = {
       ignoreDynamicRequires: true,
     }),
     terser(),
-    process.argv.indexOf('-w') === -1 && autoExternal(),
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
       port: 8888,

@@ -30,7 +30,6 @@ export default class PerformanceProbe {
     entries.slice(this.lastIndex + 1).forEach(entry => {
       if (entry.name.includes('api/mara/report')) return
       if (entry.entryType === 'resource') {
-        console.log(entry.initiatorType)
         const start = Math.max(entry.startTime, entry.fetchStart).toFixed(2)
         const end = entry.responseEnd.toFixed(2)
         this.#addLine({
