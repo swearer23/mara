@@ -22,11 +22,23 @@ import { nanoid } from 'nanoid';
  *    }
  */
 class Mara {
-  constructor(appname, appid, options = {env: 'uat'}) {
+  constructor(appname, appid, {
+    env = 'uat',
+    autoTraceId = false,
+    traceIdKey = 'mara-trace-id',
+    slowAPIThreshold = 0,
+    sessionIdKey = 'mara-session-id',
+  }) {
     this.checkParams(appname, appid)
     this.appname = appname
     this.appid = appid
-    this.env = options.env
+    this.env = env
+    this.autoTraceId = autoTraceId
+    if (this.autoTraceId) {
+      this.traceIdKey = traceIdKey
+      this.sessionIdKey = sessionIdKey
+    }
+    this.slowAPIThreshold = slowAPIThreshold
     this.userid = null
     this.sessionId = nanoid(16)
     this.init()
@@ -44,7 +56,14 @@ class Mara {
   init() {
     this.storage = new Storage(this.appname, this.appid, this.sessionId, this.env)
     new WinErr(this.storage)
-    new AjaxErr(this.storage)
+    new AjaxErr(this.storage, {
+      slowAPIThreshold: this.slowAPIThreshold,
+      autoTraceId: this.autoTraceId,
+      traceIdKey: this.traceIdKey,
+      slowAPIThreshold: this.slowAPIThreshold,
+      sessionId: this.sessionId,
+      sessionIdKey: this.sessionIdKey
+    })
     new FetchErr(this.storage)
     new performance(this.storage)
   }

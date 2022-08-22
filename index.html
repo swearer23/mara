@@ -73,7 +73,11 @@
     window.onload = () => {
       // axios.defaults.withCredentials = true;
       const csi = new Mara(config.appname, config.appid, {
-        env: 'uat'
+        env: 'uat',
+        autoTraceId: false,
+        sessionIdKey: 'davinci-request-id',
+        traceIdKey: 'davinci-trace-id',
+        slowAPIThreshold: 1000,
       });
       const btnError = document.getElementById('btn-error');
       const btnRequest = document.getElementById('btn-request');
@@ -86,7 +90,6 @@
       btnRequest.addEventListener('click', () => {
         axios({
           method: 'post',
-          timeout: 1000,
           url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
           headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
           withCredentials: true,

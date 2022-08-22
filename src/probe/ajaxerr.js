@@ -20,8 +20,21 @@ const initXhr = () => {
 }
 
 class AjaxErr {
-  constructor (storage) {
+  constructor (storage, options = {
+    autoTraceId,
+    slowAPIThreshold,
+    traceIdKey,
+    slowAPIThreshold,
+    sessionId,
+    sessionIdKey
+  }) {
     this.storage = storage
+    this.autoTraceId = options.autoTraceId
+    this.slowAPIThreshold = options.slowAPIThreshold
+    this.traceIdKey = options.traceIdKey
+    this.slowAPIThreshold = options.slowAPIThreshold
+    this.sessionId = options.sessionId
+    this.sessionIdKey = options.sessionIdKey
     this.probe()
   }
 
@@ -44,6 +57,13 @@ class AjaxErr {
     }
 
     XMLHttpRequest.prototype.send = function() {
+      if (that.autoTraceId) {
+        this.setRequestHeader(that.traceIdKey, nanoid(16));
+        this.setRequestHeader(that.sessionIdKey, that.sessionId);
+      }
+      if (that.slowAPIThreshold) {
+        xhrs[this.__xhrid].startTime = Date.now();
+      }
       if (!this.__xhrid) return send.apply(this, arguments);
       xhrs[this.__xhrid].payload = [...arguments];
       send.apply(this, arguments);
@@ -71,6 +91,11 @@ class AjaxErr {
       if (!/^2[0-9]{1,3}/ig.test(status)) {
         that.addAjaxError(context, [...args]);
       }
+      const { startTime } = xhrs[xhr.__xhrid]
+      const duration = Date.now() - startTime
+      if (duration > that.slowAPIThreshold) {
+        that.addSlowApiLog(context, [...args], duration)
+      }
     })
 
     xhr.addEventListener('error', () => {
@@ -87,6 +112,24 @@ class AjaxErr {
       }, [...args]);
       ontimeout && ontimeout.apply(this, params);
     };
+  }
+
+  addSlowApiLog (context, args, duration) {
+    const line = {
+      etype: 'SLOW_API_LOG',
+      networkError: false,
+      status: context.statusText,
+      statusCode: context.status,
+      duration,
+      request: {
+        method: args[0],
+        url: args[1]
+      }
+    }
+    context.payload && (line.payload = tryStringify(context.payload))
+    context.response && (line.response= tryStringify(context.response))
+    context.headers && (line.headers = tryStringify(context.headers))
+    this.storage.addLine(line);
   }
 
   addAjaxError (context, args) {
