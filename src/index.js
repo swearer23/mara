@@ -1,6 +1,7 @@
 import WinErr from './probe/winerr';
 import AjaxErr from './probe/ajaxerr';
 import FetchErr from './probe/fetcherr';
+import performance from './probe/performance';
 import Storage from './util/storage';
 import { nanoid } from 'nanoid';
 
@@ -45,6 +46,7 @@ class Mara {
     new WinErr(this.storage)
     new AjaxErr(this.storage)
     new FetchErr(this.storage)
+    new performance(this.storage)   
   }
 
   setUser(userid) {

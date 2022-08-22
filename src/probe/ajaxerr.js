@@ -58,7 +58,6 @@ class AjaxErr {
     const { ontimeout } = xhr;
 
     xhr.addEventListener('loadend', () => {
-      console.log(xhr)
       const { statusText, status, response } = xhr;
       let { payload, headers } = xhrs[xhr.__xhrid]
       const context = {

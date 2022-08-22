@@ -22,12 +22,22 @@ export default class Storage {
   }
  
   #readLines () {
-    return this.__pool__
+    let tempLines = []
+    if (this.__pool__.length > 5) {
+      for(let time = 0; time < 5; time++) {
+        tempLines.push(this.__pool__.shift())
+      }
+    } else {
+      tempLines = this.__pool__
+      this.__pool__ = []
+    }
+    return tempLines
   }
 
   #send2Server () {
+    if (!this.userid) return
     const lines = this.#readLines()
-    if (lines.length && this.userid) {
+    if (lines.length) {
       const path = 'api/mara/report'
       const config = getAxiosConfig(this.env, 'post', path, lines.map(line => {
         line.user = this.userid
@@ -36,9 +46,7 @@ export default class Storage {
         appname: this.appname,
         appid: this.appid
       })
-      axios(config).then(() => {
-        this.__pool__ = []
-      })
+      axios(config)
     }
   }
 
@@ -51,7 +59,7 @@ export default class Storage {
     }
     const template = Object.assign({}, {
       localeTime: localeTime,
-      time: Date.now(),
+      '@timestamp': Date.now(),
       ua: navigator.userAgent,
       url: location ? location.href : '',
       appname: this.appname,
