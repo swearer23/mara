@@ -151,7 +151,7 @@ export default class PerformanceProbe {
   #addLine (line) {
     const extraProps = {
       etype: 'PERF_LOG',
-      fps: this.fps,
+      fps: this.recentFPS,
       memoryUsage: {}
     }
 
