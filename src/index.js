@@ -64,7 +64,7 @@ class Mara {
       slowAPIThreshold: this.slowAPIThreshold,
       sessionId: this.sessionId,
       sessionIdKey: this.sessionIdKey,
-      onApiMeasured: this.performance.addApiMeasureResult
+      onApiMeasured: this.performance.addApiMeasureResult.bind(this.performance)
     })
     new FetchErr(this.storage)
   }
