@@ -60,7 +60,7 @@ export default class PerformanceProbe {
         name: '1.2.tcpConnect',
         startTime: navigationPerf.connectStart.toFixed(2),
         endTime: navigationPerf.connectEnd.toFixed(2),
-        duration: (navigationPerf.connectStart - navigationPerf.connectEnd).toFixed(2)
+        duration: (navigationPerf.connectEnd - navigationPerf.connectStart).toFixed(2)
       }
     }
     const collectHTMLRequestPerf = navigationPerf => {
