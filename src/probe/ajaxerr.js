@@ -15,7 +15,8 @@ const initXhr = () => {
     headers: {},
     payload: {},
     response: {},
-    xhrObject: null
+    xhrObject: null,
+    xhrOpenedAt: window.performance && window.performance.now()
   }
 }
 
@@ -26,7 +27,8 @@ class AjaxErr {
     traceIdKey,
     slowAPIThreshold,
     sessionId,
-    sessionIdKey
+    sessionIdKey,
+    onApiMeasured
   }) {
     this.storage = storage
     this.autoTraceId = options.autoTraceId
@@ -35,6 +37,7 @@ class AjaxErr {
     this.slowAPIThreshold = options.slowAPIThreshold
     this.sessionId = options.sessionId
     this.sessionIdKey = options.sessionIdKey
+    this.onApiMeasured = options.onApiMeasured
     this.probe()
   }
 
@@ -43,6 +46,10 @@ class AjaxErr {
     const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
 
     XMLHttpRequest.prototype.open = function() {
+      if (arguments[1].includes('api/mara/report')) {
+        open.apply(this, arguments)
+        return
+      }
       this.__xhrid = nanoid();
       xhrs[this.__xhrid] = initXhr();
       that.addListener(this, arguments);
@@ -57,6 +64,7 @@ class AjaxErr {
     }
 
     XMLHttpRequest.prototype.send = function() {
+      if (!this.__xhrid) return send.apply(this, arguments);
       if (that.autoTraceId) {
         this.setRequestHeader(that.traceIdKey, nanoid(16));
         this.setRequestHeader(that.sessionIdKey, that.sessionId);
@@ -77,6 +85,19 @@ class AjaxErr {
 
     const { ontimeout } = xhr;
 
+    xhr.addEventListener('readystatechange', () => {
+      if (window.performance && xhrs[xhr.__xhrid]) {
+        if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED)
+          xhrs[xhr.__xhrid].startRequestAt = window.performance.now()
+        if (xhr.readyState === XMLHttpRequest.LOADING)
+          xhrs[xhr.__xhrid].startReceiveAt = window.performance.now()
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+          xhrs[xhr.__xhrid].completedAt = window.performance.now()
+          this.onApiMeasured(Object.assign({}, xhrs[xhr.__xhrid]), [...args], this.traceIdKey)
+        }
+      }
+    })
+
     xhr.addEventListener('loadend', () => {
       const { statusText, status, response } = xhr;
       let { payload, headers } = xhrs[xhr.__xhrid]
@@ -91,10 +112,12 @@ class AjaxErr {
       if (!/^2[0-9]{1,3}/ig.test(status)) {
         that.addAjaxError(context, [...args]);
       }
-      const { startTime } = xhrs[xhr.__xhrid]
-      const duration = Date.now() - startTime
-      if (duration > that.slowAPIThreshold) {
-        that.addSlowApiLog(context, [...args], duration)
+      if (that.slowAPIThreshold) {
+        const { startTime } = xhrs[xhr.__xhrid]
+        const duration = Date.now() - startTime
+        if (duration > that.slowAPIThreshold) {
+          that.addSlowApiLog(context, [...args], duration)
+        }
       }
     })
 

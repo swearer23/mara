@@ -25,9 +25,9 @@ class Mara {
   constructor(appname, appid, {
     env = 'uat',
     autoTraceId = false,
-    traceIdKey = 'mara-trace-id',
+    traceIdKey = 'x-mara-trace-id',
     slowAPIThreshold = 0,
-    sessionIdKey = 'mara-session-id',
+    sessionIdKey = 'x-mara-session-id',
   }) {
     this.checkParams(appname, appid)
     this.appname = appname
@@ -55,6 +55,7 @@ class Mara {
 
   init() {
     this.storage = new Storage(this.appname, this.appid, this.sessionId, this.env)
+    this.performance = new performance(this.storage)
     new WinErr(this.storage)
     new AjaxErr(this.storage, {
       slowAPIThreshold: this.slowAPIThreshold,
@@ -62,10 +63,10 @@ class Mara {
       traceIdKey: this.traceIdKey,
       slowAPIThreshold: this.slowAPIThreshold,
       sessionId: this.sessionId,
-      sessionIdKey: this.sessionIdKey
+      sessionIdKey: this.sessionIdKey,
+      onApiMeasured: this.performance.addApiMeasureResult
     })
     new FetchErr(this.storage)
-    new performance(this.storage)
   }
 
   setUser(userid) {

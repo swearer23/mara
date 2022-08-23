@@ -75,8 +75,8 @@
       const csi = new Mara(config.appname, config.appid, {
         env: 'uat',
         autoTraceId: false,
-        sessionIdKey: 'davinci-request-id',
-        traceIdKey: 'davinci-trace-id',
+        // sessionIdKey: 'davinci-request-id',
+        // traceIdKey: 'davinci-trace-id',
         slowAPIThreshold: 1000,
       });
       const btnError = document.getElementById('btn-error');
@@ -109,6 +109,16 @@
       btnCustomMsg.addEventListener('click', () => {
         csi.probe('hello world', 'the result of XXX is', 23, {a: 1, b: 2, c: {d: 3, e: 5}}, {f: 6, g: 7})
       })
+
+      performance.mark('settimeoutstart')
+      setTimeout(() => {
+        performance.mark('settimeoutend')
+        performance.measure(
+          'mysettimeout',
+          'settimeoutstart',
+          'settimeoutend'
+        )
+      }, 2000)
     }
     
     // const oError = window.console.error

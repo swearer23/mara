@@ -15,6 +15,26 @@ export default class PerformanceProbe {
     }
   }
 
+  addApiMeasureResult (xhr, args, traceIdKey) {
+    const duration = (xhr.completedAt - xhr.xhrOpenedAt).toFixed(2)
+    const ttfb = (xhr.startReceiveAt - xhr.xhrOpenedAt).toFixed(2)
+    const networkcost = (xhr.completedAt - xhr.startReceiveAt).toFixed(2)
+    const traceIdValue = xhr.headers[traceIdKey]
+    const line = {
+      etype: 'PERF_LOG',
+      entryType: 'xmlhttprequest',
+      entryName: args[1],
+      startTime: xhr.xhrOpenedAt.toFixed(2),
+      endTime: xhr.completedAt.toFixed(2),
+      duration: duration,
+      ttfb,
+      networkcost,
+      traceIdKey,
+      traceIdValue
+    }
+    this.storage.addLine(line)
+  }
+
   #probe () {
     this.collectInterval = setInterval(() => {
       this.#collect()
@@ -29,7 +49,7 @@ export default class PerformanceProbe {
     }
     entries.slice(this.lastIndex + 1).forEach(entry => {
       if (entry.name.includes('api/mara/report')) return
-      if (entry.entryType === 'resource') {
+      if (entry.entryType === 'resource' && entry.initiatorType !== 'xmlhttprequest') {
         const start = Math.max(entry.startTime, entry.fetchStart).toFixed(2)
         const end = entry.responseEnd.toFixed(2)
         this.#addLine({
@@ -38,6 +58,13 @@ export default class PerformanceProbe {
           startTime: start,
           endTime: end,
           duration: (end - start).toFixed(2)
+        })
+      } else if (['mark', 'measure'].includes(entry.entryType)) {
+        this.#addLine({
+          entryType: entry.entryType,
+          name: entry.name,
+          startTime: entry.startTime.toFixed(2),
+          duration: entry.duration.toFixed(2)
         })
       }
     })
@@ -129,7 +156,7 @@ export default class PerformanceProbe {
     const line = {
       etype: 'PERF_LOG',
       entryType,
-      name,
+      entryName: name,
       startTime,
       endTime,
       duration
