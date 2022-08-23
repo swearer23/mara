@@ -161,7 +161,7 @@ export default class PerformanceProbe {
         jsHeapSizeLimit,
         totalJSHeapSize,
         usedJSHeapSize,
-        usedPercentage: (usedJSHeapSize / totalJSHeapSize).toFixed(2)
+        usedPercentage: (usedJSHeapSize / jsHeapSizeLimit).toFixed(2)
       }
     }
 
