@@ -77,8 +77,16 @@
         autoTraceId: false,
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
-        slowAPIThreshold: 1000,
+        slowAPIThreshold: 100,
       });
+      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
+      const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
+      slowNetworkNotifier.addEventListener('slowNetworkDetected', evt => {
+        console.log(evt.detail.speed)
+      })
+      accumulatedNetworkCostMonitor.addEventListener('accumulatedNetworkCostDetected', evt => {
+        console.log(evt)
+      })
       const btnError = document.getElementById('btn-error');
       const btnRequest = document.getElementById('btn-request');
       const btnSetUser = document.getElementById('btn-set-user');

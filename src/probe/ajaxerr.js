@@ -81,7 +81,7 @@ class AjaxErr {
   addListener (xhr, args) {
     const that = this
     if (xhrs[xhr.__xhrid].xhrObject) return;
-    xhrs[xhr.__xhrid].xhrObject = { xhr }
+    xhrs[xhr.__xhrid].xhrObject = xhr
 
     const { ontimeout } = xhr;
 
@@ -110,12 +110,14 @@ class AjaxErr {
       }
       if (parseInt(status) === 0) return
       if (!/^2[0-9]{1,3}/ig.test(status)) {
-        that.addAjaxError(context, [...args]);
+        return that.addAjaxError(context, [...args]);
       }
       if (that.slowAPIThreshold) {
-        const { startTime } = xhrs[xhr.__xhrid]
-        const duration = Date.now() - startTime
-        if (duration > that.slowAPIThreshold) {
+        const serverTiming = new Number(xhr
+          .getResponseHeader('server-timing')
+          ?.replace('app;dur=', '')
+        )?.toFixed(2)
+        if (serverTiming > that.slowAPIThreshold) {
           that.addSlowApiLog(context, [...args], duration)
         }
       }

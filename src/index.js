@@ -13,6 +13,59 @@ import { nanoid } from 'nanoid';
 //   }
 // }
 
+class SlowNetworkMonitor extends EventTarget {
+  constructor (threshold) {
+    super()
+    this.threshold = threshold
+  }
+
+  setSpeedSample (speed) {
+    if (speed < this.threshold) {
+      const event = new CustomEvent('slowNetworkDetected', {detail: {speed}});
+      this.dispatchEvent(event)
+    }
+  }
+}
+
+class AccumulatedNetworkCostMonitor extends EventTarget {
+  constructor (threshold) {
+    super()
+    this.threshold = threshold
+    this.ntPerfPages = null
+    this.didReport = false
+  }
+
+  onNetworkCost (perf) {
+    const { requestStart, responseEnd } = perf
+    if (!requestStart || !responseEnd || this.didReport) return
+    const duration = perf.entryType === 'navigation' ? perf.responseEnd - perf.requestStart : perf.duration 
+    if (!this.ntPerfPages) {
+      this.ntPerfPages = {
+        start: requestStart,
+        end: responseEnd,
+        duration
+      }
+    } else {
+      if (requestStart > this.ntPerfPages.end) {
+        this.ntPerfPages.start = requestStart
+        this.ntPerfPages.end = responseEnd
+        this.ntPerfPages.duration += duration
+      } else {
+        if (this.ntPerfPages.end < responseEnd) {
+          this.ntPerfPages.end = responseEnd
+        }
+        this.ntPerfPages.duration += responseEnd - this.ntPerfPages.end
+      }
+    }
+    console.log(this.ntPerfPages)
+    if (this.ntPerfPages.duration > this.threshold) {
+      const event = new CustomEvent('accumulatedNetworkCostDetected', {detail: this.ntPerfPages.duration})
+      this.dispatchEvent(event)
+      this.didReport = true
+    }
+  }
+}
+
 /**
  * @param appid: 项目Id， 必传
  * @param appname: 项目名称，必传
@@ -26,8 +79,8 @@ class Mara {
     env = 'uat',
     autoTraceId = false,
     traceIdKey = 'x-mara-trace-id',
-    slowAPIThreshold = 0,
     sessionIdKey = 'x-mara-session-id',
+    slowAPIThreshold = 0
   }) {
     this.checkParams(appname, appid)
     this.appname = appname
@@ -67,6 +120,22 @@ class Mara {
       onApiMeasured: this.performance.addApiMeasureResult.bind(this.performance)
     })
     new FetchErr(this.storage)
+  }
+
+  monitorSlowNetworkAt (threshold) {
+    if (threshold) {
+      const slowNetworkMonitor = new SlowNetworkMonitor(threshold)
+      this.performance.setSlowNetworkNotifier(slowNetworkMonitor)
+      return slowNetworkMonitor
+    }
+  }
+
+  monitorAccumulatedNetworkCost (threshold) {
+    if (threshold) {
+      const accumulatedNetworkCostMonitor = new AccumulatedNetworkCostMonitor(threshold)
+      this.performance.setAccumulatedNetworkCostMonitor(accumulatedNetworkCostMonitor)
+      return accumulatedNetworkCostMonitor
+    }
   }
 
   setUser(userid) {

@@ -5,6 +5,7 @@ export default class PerformanceProbe {
     this.lastIndex = null
     this.navigationPerfCollected = false
     this.recentFPS = null
+    this.networkSpeedSamples = []
     this.#fpsMeter()
     if (window.performance) {
       if (window.performance.getEntriesByType('navigation')[0].domComplete) {
@@ -23,6 +24,8 @@ export default class PerformanceProbe {
     const ttfb = (xhr.startReceiveAt - xhr.xhrOpenedAt).toFixed(2)
     const networkcost = (xhr.completedAt - xhr.startReceiveAt).toFixed(2)
     const traceIdValue = xhr.headers[traceIdKey]
+    const responseSize = xhr.xhrObject.response.length
+    this.#getNetworkSpeed(responseSize, xhr.completedAt - xhr.startReceiveAt)
     const line = {
       entryType: 'xmlhttprequest',
       entryName: args[1],
@@ -37,6 +40,14 @@ export default class PerformanceProbe {
     this.#addLine(line)
   }
 
+  setSlowNetworkNotifier (slowNetworkNotifier) {
+    this.slowNetworkNotifier = slowNetworkNotifier
+  }
+
+  setAccumulatedNetworkCostMonitor (accumulatedNetworkCostMonitor) {
+    this.accumulatedNetworkCostMonitor = accumulatedNetworkCostMonitor
+  }
+
   #probe () {
     this.collectInterval = setInterval(() => {
       this.#collect()
@@ -46,32 +57,42 @@ export default class PerformanceProbe {
   #collect () {
     const entries = performance.getEntries()
     if (!this.navigationPerfCollected) {
-      this.#collectNavigation(entries.filter(entry => entry.entryType === 'navigation')[0])
+      const entry = entries.filter(entry => entry.entryType === 'navigation')[0]
+      this.#collectNavigation(entry)
       this.lastIndex = 0
+      if (this.accumulatedNetworkCostMonitor)
+        this.accumulatedNetworkCostMonitor.onNetworkCost(entry)
     }
     entries.slice(this.lastIndex + 1).forEach(entry => {
       if (entry.name.includes('api/mara/report')) return
-      if (entry.entryType === 'resource' && entry.initiatorType !== 'xmlhttprequest') {
-        const start = Math.max(entry.startTime, entry.fetchStart).toFixed(2)
-        const end = entry.responseEnd.toFixed(2)
-        this.#addLine({
-          entryType: entry.entryType,
-          entryName: entry.name,
-          startTime: start,
-          endTime: end,
-          duration: (end - start).toFixed(2)
-        })
-      } else if (['mark', 'measure'].includes(entry.entryType)) {
-        this.#addLine({
-          entryType: entry.entryType,
-          entryName: entry.name,
-          startTime: entry.startTime.toFixed(2),
-          duration: entry.duration.toFixed(2)
-        })
-      }
+      this.#reportNormalResourcePerf(entry)
+      if (this.accumulatedNetworkCostMonitor)
+        this.accumulatedNetworkCostMonitor.onNetworkCost(entry)
     })
     this.lastIndex = entries.length - 1
   }
+
+  #reportNormalResourcePerf (entry) {
+    if (entry.entryType === 'resource' && entry.initiatorType !== 'xmlhttprequest') {
+      const start = Math.max(entry.startTime, entry.fetchStart).toFixed(2)
+      const end = entry.responseEnd.toFixed(2)
+      this.#addLine({
+        entryType: entry.entryType,
+        entryName: entry.name,
+        startTime: start,
+        endTime: end,
+        duration: (end - start).toFixed(2)
+      })
+    } else if (['mark', 'measure'].includes(entry.entryType)) {
+      this.#addLine({
+        entryType: entry.entryType,
+        entryName: entry.name,
+        startTime: entry.startTime.toFixed(2),
+        duration: entry.duration.toFixed(2)
+      })
+    }
+  }
+
   #collectNavigation (navigationEntry) {
     this.navigationPerfCollected = true
     const collectDNSPerf = navigationPerf => {
@@ -146,6 +167,8 @@ export default class PerformanceProbe {
     this.#addLine(domComplete)
     const navigationTiming = collectNavigationTiming(navigationEntry)
     this.#addLine(navigationTiming)
+    const { responseStart, responseEnd } = navigationEntry
+    this.#getNetworkSpeed(navigationEntry.transferSize, responseEnd - responseStart)
   }
 
   #addLine (line) {
@@ -186,5 +209,21 @@ export default class PerformanceProbe {
         requestAnimationFrame(loop);
       });
     }
+  }
+
+  #getNetworkSpeed (size, duration) {
+    if (!this.slowNetworkNotifier) return
+    if (this.networkSpeedSamples.length > 4) {
+      this.networkSpeedSamples.shift()
+    }
+    this.networkSpeedSamples.push({size, duration})
+    const { totalSize, totalDuration } = this.networkSpeedSamples.reduce((acc, cur) => {
+      return {
+        totalSize: acc.totalSize + cur.size,
+        totalDuration: acc.totalDuration + cur.duration
+      }
+    }, {totalSize: 0, totalDuration: 0})
+    const avgSpeed = (totalSize / 1024) / (totalDuration / 1000)
+    this.slowNetworkNotifier.setSpeedSample(avgSpeed)
   }
 }
