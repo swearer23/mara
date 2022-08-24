@@ -48,7 +48,7 @@ class AjaxErr {
     const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
 
     XMLHttpRequest.prototype.open = function() {
-      if (this.excludeAjaxURLRegex.test(arguments[1])) {
+      if (that.excludeAjaxURLRegex.test(arguments[1])) {
         open.apply(this, arguments)
         return
       }
