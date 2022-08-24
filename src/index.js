@@ -92,7 +92,7 @@ class Mara {
     traceIdKey = 'x-mara-trace-id',
     sessionIdKey = 'x-mara-session-id',
     slowAPIThreshold = 0,
-    excludeAjaxURL = undefined
+    excludeAjaxURL = []
   }) {
     this.checkParams(appname, appid)
     this.appname = appname
