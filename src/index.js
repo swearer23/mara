@@ -17,9 +17,21 @@ class SlowNetworkMonitor extends EventTarget {
   constructor (threshold) {
     super()
     this.threshold = threshold
+    this.networkSpeedSamples = []
   }
 
-  setSpeedSample (speed) {
+  setSpeedSample (sample) {
+    if (this.networkSpeedSamples.length > 4) {
+      this.networkSpeedSamples.shift()
+    }
+    this.networkSpeedSamples.push(sample)
+    const { totalSize, totalDuration } = this.networkSpeedSamples.reduce((acc, cur) => {
+      return {
+        totalSize: acc.totalSize + cur.size,
+        totalDuration: acc.totalDuration + cur.duration
+      }
+    }, {totalSize: 0, totalDuration: 0})
+    const speed = (totalSize / 1024) / (totalDuration / 1000)
     if (speed < this.threshold) {
       const event = new CustomEvent('slowNetworkDetected', {detail: {speed}});
       this.dispatchEvent(event)
@@ -57,7 +69,7 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
         this.ntPerfPages.duration += responseEnd - this.ntPerfPages.end
       }
     }
-    console.log(this.ntPerfPages)
+    console.log(this.ntPerfPages, perf)
     if (this.ntPerfPages.duration > this.threshold) {
       const event = new CustomEvent('accumulatedNetworkCostDetected', {detail: this.ntPerfPages.duration})
       this.dispatchEvent(event)

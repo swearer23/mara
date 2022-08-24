@@ -82,7 +82,7 @@
       const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
       const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
       slowNetworkNotifier.addEventListener('slowNetworkDetected', evt => {
-        console.log(evt.detail.speed)
+        console.log(evt)
       })
       accumulatedNetworkCostMonitor.addEventListener('accumulatedNetworkCostDetected', evt => {
         console.log(evt)

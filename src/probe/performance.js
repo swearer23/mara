@@ -5,7 +5,6 @@ export default class PerformanceProbe {
     this.lastIndex = null
     this.navigationPerfCollected = false
     this.recentFPS = null
-    this.networkSpeedSamples = []
     this.#fpsMeter()
     if (window.performance) {
       if (window.performance.getEntriesByType('navigation')[0].domComplete) {
@@ -213,17 +212,6 @@ export default class PerformanceProbe {
 
   #getNetworkSpeed (size, duration) {
     if (!this.slowNetworkNotifier) return
-    if (this.networkSpeedSamples.length > 4) {
-      this.networkSpeedSamples.shift()
-    }
-    this.networkSpeedSamples.push({size, duration})
-    const { totalSize, totalDuration } = this.networkSpeedSamples.reduce((acc, cur) => {
-      return {
-        totalSize: acc.totalSize + cur.size,
-        totalDuration: acc.totalDuration + cur.duration
-      }
-    }, {totalSize: 0, totalDuration: 0})
-    const avgSpeed = (totalSize / 1024) / (totalDuration / 1000)
-    this.slowNetworkNotifier.setSpeedSample(avgSpeed)
+    this.slowNetworkNotifier.setSpeedSample({size, duration})
   }
 }
