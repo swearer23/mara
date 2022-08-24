@@ -48,18 +48,19 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
   }
 
   onNetworkCost (perf) {
-    const { requestStart, responseEnd } = perf
-    if (!requestStart || !responseEnd || this.didReport) return
+    const { requestStart, responseEnd, fetchStart } = perf
+    const startTime = Math.max(requestStart, fetchStart)
+    if (!startTime || !responseEnd || this.didReport) return
     const duration = perf.entryType === 'navigation' ? perf.responseEnd - perf.requestStart : perf.duration 
     if (!this.ntPerfPages) {
       this.ntPerfPages = {
-        start: requestStart,
+        start: startTime,
         end: responseEnd,
         duration
       }
     } else {
-      if (requestStart > this.ntPerfPages.end) {
-        this.ntPerfPages.start = requestStart
+      if (startTime > this.ntPerfPages.end) {
+        this.ntPerfPages.start = startTime
         this.ntPerfPages.end = responseEnd
         this.ntPerfPages.duration += duration
       } else {
