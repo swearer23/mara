@@ -28,7 +28,8 @@ class AjaxErr {
     slowAPIThreshold,
     sessionId,
     sessionIdKey,
-    onApiMeasured
+    onApiMeasured,
+    excludeAjaxURL
   }) {
     this.storage = storage
     this.autoTraceId = options.autoTraceId
@@ -38,6 +39,7 @@ class AjaxErr {
     this.sessionId = options.sessionId
     this.sessionIdKey = options.sessionIdKey
     this.onApiMeasured = options.onApiMeasured
+    this.excludeAjaxURLRegex = new RegExp(`(${options.excludeAjaxURL.join('|')})$`)
     this.probe()
   }
 
@@ -46,7 +48,7 @@ class AjaxErr {
     const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
 
     XMLHttpRequest.prototype.open = function() {
-      if (arguments[1].includes('api/mara/report')) {
+      if (this.excludeAjaxURLRegex.test(arguments[1])) {
         open.apply(this, arguments)
         return
       }

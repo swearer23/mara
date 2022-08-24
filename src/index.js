@@ -69,7 +69,6 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
         }
       }
     }
-    console.log(this.ntPerfPages, perf)
     if (this.ntPerfPages.duration > this.threshold) {
       const event = new CustomEvent('accumulatedNetworkCostDetected', {detail: this.ntPerfPages.duration})
       this.dispatchEvent(event)
@@ -92,7 +91,8 @@ class Mara {
     autoTraceId = false,
     traceIdKey = 'x-mara-trace-id',
     sessionIdKey = 'x-mara-session-id',
-    slowAPIThreshold = 0
+    slowAPIThreshold = 0,
+    excludeAjaxURL = []
   }) {
     this.checkParams(appname, appid)
     this.appname = appname
@@ -104,6 +104,7 @@ class Mara {
       this.sessionIdKey = sessionIdKey
     }
     this.slowAPIThreshold = slowAPIThreshold
+    this.excludeAjaxURL = excludeAjaxURL
     this.userid = null
     this.sessionId = nanoid(16)
     this.init()
@@ -129,7 +130,8 @@ class Mara {
       slowAPIThreshold: this.slowAPIThreshold,
       sessionId: this.sessionId,
       sessionIdKey: this.sessionIdKey,
-      onApiMeasured: this.performance.addApiMeasureResult.bind(this.performance)
+      onApiMeasured: this.performance.addApiMeasureResult.bind(this.performance),
+      excludeAjaxURL: this.excludeAjaxURL
     })
     new FetchErr(this.storage)
   }
