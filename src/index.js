@@ -64,9 +64,9 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
         this.ntPerfPages.duration += duration
       } else {
         if (this.ntPerfPages.end < responseEnd) {
+          this.ntPerfPages.duration += responseEnd - this.ntPerfPages.end
           this.ntPerfPages.end = responseEnd
         }
-        this.ntPerfPages.duration += responseEnd - this.ntPerfPages.end
       }
     }
     console.log(this.ntPerfPages, perf)
