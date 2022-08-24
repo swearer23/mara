@@ -51,30 +51,11 @@
   <!-- <script src="../dist/mara.umd.js"></script> -->
   <script type="module">
     import Mara from "/src/index.js";
-    const params = new URL(location.href).searchParams;
-    const inputConfig = {}
-    for (const [key, value] of params.entries()) {
-      inputConfig[key] = value
-    }
-    const defaultConfig = {
-      appname: 'mara',
-      appid: 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2',
-      // maxLine: 2,
-      // logAjaxTrace: true,
-      autoReport: true,
-      operationMethod: 'upload',
-      containerFontSize: '14px',
-      env: 'prod'
-      // excludeAjaxKeywords: ['julianos']
-      // customPanelTrigger: true
-    }
-    const config = { ...defaultConfig, ...inputConfig }
-    console.log(config)
     window.onload = () => {
       // axios.defaults.withCredentials = true;
-      const csi = new Mara(config.appname, config.appid, {
+      const csi = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
         env: 'uat',
-        autoTraceId: false,
+        autoTraceId: true,
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
         slowAPIThreshold: 100,

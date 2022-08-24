@@ -39,7 +39,8 @@ class AjaxErr {
     this.sessionId = options.sessionId
     this.sessionIdKey = options.sessionIdKey
     this.onApiMeasured = options.onApiMeasured
-    this.excludeAjaxURLRegex = new RegExp(`(${options.excludeAjaxURL.join('|')})$`)
+    if (options.excludeAjaxURL)
+      this.excludeAjaxURLRegex = new RegExp(`(${options.excludeAjaxURL.join('|')})$`)
     this.probe()
   }
 
@@ -48,7 +49,7 @@ class AjaxErr {
     const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
 
     XMLHttpRequest.prototype.open = function() {
-      if (that.excludeAjaxURLRegex.test(arguments[1])) {
+      if (that.excludeAjaxURLRegex?.test(arguments[1])) {
         open.apply(this, arguments)
         return
       }
