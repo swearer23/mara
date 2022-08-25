@@ -41,13 +41,15 @@ class SlowNetworkMonitor extends EventTarget {
     }, {totalSize: 0, totalDuration: 0})
     const speed = (totalSize / 1024) / (totalDuration / 1000)
     if (speed < this.threshold) {
-      const event = new CustomEvent('slowNetworkDetected', {detail: {
+      const detail = {
         speed,
         speedText: `${speed} kB/s`,
         totalSize,
         totalDuration,
-      }});
+      }
+      const event = new CustomEvent('slowNetworkDetected', {detail});
       this.dispatchEvent(event)
+      window.performance?.mark('slowNetworkDetected', {detail})
     }
   }
 }
@@ -84,13 +86,13 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
       }
     }
     if (this.ntPerfPages.duration > this.threshold) {
-      const event = new CustomEvent('accumulatedNetworkCostDetected', {
-        detail: {
-          networkCost: this.ntPerfPages.duration,
-          totalCost: window.performance?.now()
-        }
-      })
+      const detail = {
+        networkCost: this.ntPerfPages.duration,
+        totalCost: window.performance?.now()
+      }
+      const event = new CustomEvent('accumulatedNetworkCostDetected', {detail})
       this.dispatchEvent(event)
+      window.performance?.mark('accumulatedNetworkCostDetected', {detail})
       this.didReport = true
     }
   }

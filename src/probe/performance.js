@@ -106,8 +106,11 @@ export default class PerformanceProbe {
         entryType: entry.entryType,
         entryName: entry.name,
         startTime: entry.startTime.toFixed(2),
-        duration: entry.duration.toFixed(2)
+        duration: entry.duration.toFixed(2),
+        perfDetail: tryStringify(entry.detail)
       })
+    } else {
+      this.#addLine(entry.toJSON())
     }
   }
 
