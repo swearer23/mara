@@ -61,10 +61,13 @@
       });
       const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
       const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
-      slowNetworkNotifier.addEventListener('slowNetworkDetected', evt => {
-        console.log(evt)
+      slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt => {
+        console.log(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt)
       })
-      accumulatedNetworkCostMonitor.addEventListener('accumulatedNetworkCostDetected', evt => {
+      slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt => {
+        console.log(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt)
+      })
+      accumulatedNetworkCostMonitor.addEventListener(accumulatedNetworkCostMonitor.ACCUMULATED_NETWORK_COST_DETECTED, evt => {
         console.log(evt)
       })
       const btnError = document.getElementById('btn-error');

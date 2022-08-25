@@ -12,16 +12,18 @@ import { nanoid } from 'nanoid';
 //     return randomFillSync(buffer)
 //   }
 // }
-
 class SlowNetworkMonitor extends EventTarget {
   constructor (threshold, speedDetectMode = Mara.NET_NETWORK_SPEED_MODE) {
     super()
     this.threshold = threshold
     this.speedDetectMode = speedDetectMode
     this.networkSpeedSamples = []
+    this.SLOW_NETWORK_DETECTED = 'slow_network_detected';
+    this.SLOW_NETWORK_RECOVERED = 'slow_network_recovered';
   }
 
   setSpeedSample (sample) {
+    const { speed: preSpeed } = this.calculateSpeedBySamples()
     if (this.networkSpeedSamples.length > 4) {
       this.networkSpeedSamples.shift()
     }
@@ -33,6 +35,16 @@ class SlowNetworkMonitor extends EventTarget {
       sample.duration = responseEnd - requestStart - serverTiming
     }
     this.networkSpeedSamples.push(sample)
+    const { totalSize, totalDuration, speed } = this.calculateSpeedBySamples()
+    console.log('speed', speed)
+    if (speed < this.threshold) {
+      this.#triggerNetworkSpeedEvent(speed, totalSize, totalDuration, this.SLOW_NETWORK_DETECTED)
+    } else if (preSpeed < this.threshold) {
+      this.#triggerNetworkSpeedEvent(speed, totalSize, totalDuration, this.SLOW_NETWORK_RECOVERED)
+    }
+  }
+
+  calculateSpeedBySamples () {
     const { totalSize, totalDuration } = this.networkSpeedSamples.reduce((acc, cur) => {
       return {
         totalSize: acc.totalSize + cur.size,
@@ -40,17 +52,19 @@ class SlowNetworkMonitor extends EventTarget {
       }
     }, {totalSize: 0, totalDuration: 0})
     const speed = (totalSize / 1024) / (totalDuration / 1000)
-    if (speed < this.threshold) {
-      const detail = {
-        speed,
-        speedText: `${speed} kB/s`,
-        totalSize,
-        totalDuration,
-      }
-      const event = new CustomEvent('slowNetworkDetected', {detail});
-      this.dispatchEvent(event)
-      window.performance?.mark('slowNetworkDetected', {detail})
+    return { totalSize, totalDuration, speed }
+  }
+
+  #triggerNetworkSpeedEvent(speed, totalSize, totalDuration, eventType) {
+    const detail = {
+      speed,
+      speedText: `${speed} kB/s`,
+      totalSize,
+      totalDuration,
     }
+    const event = new CustomEvent(eventType, {detail});
+    this.dispatchEvent(event)
+    window.performance?.mark(SlowNetworkMonitor.SLOW_NETWORK_DETECTED, {detail})
   }
 }
 
@@ -60,6 +74,7 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
     this.threshold = threshold
     this.ntPerfPages = null
     this.didReport = false
+    this.ACCUMULATED_NETWORK_COST_DETECTED = 'accumulated_network_cost_detected';
   }
 
   onNetworkCost (perf) {
@@ -90,9 +105,9 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
         networkCost: this.ntPerfPages.duration,
         totalCost: window.performance?.now()
       }
-      const event = new CustomEvent('accumulatedNetworkCostDetected', {detail})
+      const event = new CustomEvent(this.ACCUMULATED_NETWORK_COST_DETECTED, {detail})
       this.dispatchEvent(event)
-      window.performance?.mark('accumulatedNetworkCostDetected', {detail})
+      window.performance?.mark(this.ACCUMULATED_NETWORK_COST_DETECTED, {detail})
       this.didReport = true
     }
   }
