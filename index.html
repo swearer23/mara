@@ -58,9 +58,8 @@
         // autoTraceId: true,
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
-        slowAPIThreshold: 100,
       });
-      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000, Mara.GROSS_NETWORK_SPEED_MODE)
+      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
       const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
       slowNetworkNotifier.addEventListener('slowNetworkDetected', evt => {
         console.log(evt)

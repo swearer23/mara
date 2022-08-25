@@ -1,6 +1,6 @@
 import MD5 from 'crypto-js/md5'
 
-const ts2slug = timestamp => {
+export const ts2slug = timestamp => {
   const currSegmentsValidChar = seg => (seg >= 65 && seg < 91) || (seg >= 97 && seg < 123)
   const tsStr = timestamp.toString().split("");
   let encryptedTs = ""
@@ -30,11 +30,11 @@ const ts2slug = timestamp => {
   return encryptedTs.split("").reverse().join("")
 }
 
-const sign = (appid, timestamp) => {
+export const sign = (appid, timestamp) => {
   return MD5(`${appid}${timestamp}`).toString();
 }
 
-const getAxiosConfig = (env, method, path, data, app) => {
+export const getAxiosConfig = (env, method, path, data, app) => {
   let host, gaiaKey
   if (env === 'prod') {
     host = 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/'
@@ -65,8 +65,10 @@ const getAxiosConfig = (env, method, path, data, app) => {
   }
 }
 
-export {
-  ts2slug,
-  sign,
-  getAxiosConfig
-};
+export const tryStringify = obj => {
+  try {
+    return JSON.stringify(obj, null, 2)
+  } catch (e) {
+    return 'not_serializable'
+  }
+}

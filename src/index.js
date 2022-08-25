@@ -41,7 +41,12 @@ class SlowNetworkMonitor extends EventTarget {
     }, {totalSize: 0, totalDuration: 0})
     const speed = (totalSize / 1024) / (totalDuration / 1000)
     if (speed < this.threshold) {
-      const event = new CustomEvent('slowNetworkDetected', {detail: {speed, totalSize, totalDuration}});
+      const event = new CustomEvent('slowNetworkDetected', {detail: {
+        speed,
+        speedText: `${speed} kB/s`,
+        totalSize,
+        totalDuration,
+      }});
       this.dispatchEvent(event)
     }
   }
@@ -105,7 +110,6 @@ class Mara {
     autoTraceId = false,
     traceIdKey = 'x-mara-trace-id',
     sessionIdKey = 'x-mara-session-id',
-    slowAPIThreshold = 0,
     excludeAjaxURL = []
   }) {
     this.checkParams(appname, appid)
@@ -117,7 +121,6 @@ class Mara {
       this.traceIdKey = traceIdKey
       this.sessionIdKey = sessionIdKey
     }
-    this.slowAPIThreshold = slowAPIThreshold
     this.excludeAjaxURL = excludeAjaxURL
     this.userid = null
     this.sessionId = nanoid(16)
@@ -138,10 +141,8 @@ class Mara {
     this.performance = new performance(this.storage)
     new WinErr(this.storage)
     new AjaxErr(this.storage, {
-      slowAPIThreshold: this.slowAPIThreshold,
       autoTraceId: this.autoTraceId,
       traceIdKey: this.traceIdKey,
-      slowAPIThreshold: this.slowAPIThreshold,
       sessionId: this.sessionId,
       sessionIdKey: this.sessionIdKey,
       onApiMeasured: this.performance.addApiMeasureResult.bind(this.performance),

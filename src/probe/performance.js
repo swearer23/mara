@@ -1,3 +1,5 @@
+import { tryStringify } from "../util/util";
+
 export default class PerformanceProbe {
   constructor(storage) {
     this.storage = storage;
@@ -24,12 +26,7 @@ export default class PerformanceProbe {
     const networkcost = (xhr.completedAt - xhr.startReceiveAt).toFixed(2)
     const traceIdValue = xhr.headers[traceIdKey]
     const responseSize = xhr.xhrObject.response.length
-    let serverTiming = new Number(xhr
-      .xhrObject
-      ?.getResponseHeader('server-timing')
-      ?.replace('app;dur=', '')
-    )
-    serverTiming = isNaN(serverTiming) ? 0 : serverTiming
+    const serverTiming = xhr.serverTiming
     this.#getNetworkSpeed(responseSize, {
       requestStart: xhr.xhrOpenedAt,
       responseStart: xhr.startReceiveAt,
@@ -44,9 +41,20 @@ export default class PerformanceProbe {
       duration: duration,
       ttfb,
       networkcost,
+      serverTiming,
       traceIdKey,
       traceIdValue
     }
+    const { response } = xhr.xhrObject;
+    const { payload, headers } = xhr
+    const context = {
+      payload,
+      headers,
+      response
+    }
+    context.payload && (line.payload = tryStringify(context.payload))
+    context.response && (line.response= tryStringify(context.response))
+    context.headers && (line.headers = tryStringify(context.headers))
     this.#addLine(line)
   }
 
