@@ -55,12 +55,12 @@
       // axios.defaults.withCredentials = true;
       const csi = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
         env: 'uat',
-        autoTraceId: true,
+        // autoTraceId: true,
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
         slowAPIThreshold: 100,
       });
-      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
+      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000, Mara.GROSS_NETWORK_SPEED_MODE)
       const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
       slowNetworkNotifier.addEventListener('slowNetworkDetected', evt => {
         console.log(evt)

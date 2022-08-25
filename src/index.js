@@ -14,15 +14,23 @@ import { nanoid } from 'nanoid';
 // }
 
 class SlowNetworkMonitor extends EventTarget {
-  constructor (threshold) {
+  constructor (threshold, speedDetectMode = Mara.NET_NETWORK_SPEED_MODE) {
     super()
     this.threshold = threshold
+    this.speedDetectMode = speedDetectMode
     this.networkSpeedSamples = []
   }
 
   setSpeedSample (sample) {
     if (this.networkSpeedSamples.length > 4) {
       this.networkSpeedSamples.shift()
+    }
+    const { requestStart, responseStart, responseEnd, serverTiming } = sample.costFactors
+    if (this.speedDetectMode === Mara.NET_NETWORK_SPEED_MODE) {
+      sample.duration = responseEnd - responseStart
+    }
+    if (this.speedDetectMode === Mara.GROSS_NETWORK_SPEED_MODE) {
+      sample.duration = responseEnd - requestStart - serverTiming
     }
     this.networkSpeedSamples.push(sample)
     const { totalSize, totalDuration } = this.networkSpeedSamples.reduce((acc, cur) => {
@@ -33,7 +41,7 @@ class SlowNetworkMonitor extends EventTarget {
     }, {totalSize: 0, totalDuration: 0})
     const speed = (totalSize / 1024) / (totalDuration / 1000)
     if (speed < this.threshold) {
-      const event = new CustomEvent('slowNetworkDetected', {detail: {speed}});
+      const event = new CustomEvent('slowNetworkDetected', {detail: {speed, totalSize, totalDuration}});
       this.dispatchEvent(event)
     }
   }
@@ -71,7 +79,12 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
       }
     }
     if (this.ntPerfPages.duration > this.threshold) {
-      const event = new CustomEvent('accumulatedNetworkCostDetected', {detail: this.ntPerfPages.duration})
+      const event = new CustomEvent('accumulatedNetworkCostDetected', {
+        detail: {
+          networkCost: this.ntPerfPages.duration,
+          totalCost: window.performance?.now()
+        }
+      })
       this.dispatchEvent(event)
       this.didReport = true
     }
@@ -137,9 +150,9 @@ class Mara {
     new FetchErr(this.storage)
   }
 
-  monitorSlowNetworkAt (threshold) {
+  monitorSlowNetworkAt (threshold, speedDetectMode) {
     if (threshold) {
-      const slowNetworkMonitor = new SlowNetworkMonitor(threshold)
+      const slowNetworkMonitor = new SlowNetworkMonitor(threshold, speedDetectMode)
       this.performance.setSlowNetworkNotifier(slowNetworkMonitor)
       return slowNetworkMonitor
     }
@@ -171,5 +184,8 @@ class Mara {
     }
   }
 }
+
+Mara.NET_NETWORK_SPEED_MODE = 1
+Mara.GROSS_NETWORK_SPEED_MODE = 2
 
 export default Mara;

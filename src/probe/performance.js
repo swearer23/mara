@@ -24,7 +24,18 @@ export default class PerformanceProbe {
     const networkcost = (xhr.completedAt - xhr.startReceiveAt).toFixed(2)
     const traceIdValue = xhr.headers[traceIdKey]
     const responseSize = xhr.xhrObject.response.length
-    this.#getNetworkSpeed(responseSize, xhr.completedAt - xhr.startReceiveAt)
+    let serverTiming = new Number(xhr
+      .xhrObject
+      ?.getResponseHeader('server-timing')
+      ?.replace('app;dur=', '')
+    )
+    serverTiming = isNaN(serverTiming) ? 0 : serverTiming
+    this.#getNetworkSpeed(responseSize, {
+      requestStart: xhr.xhrOpenedAt,
+      responseStart: xhr.startReceiveAt,
+      responseEnd: xhr.completedAt,
+      serverTiming
+    })
     const line = {
       entryType: 'xmlhttprequest',
       entryName: args[1],
@@ -167,7 +178,12 @@ export default class PerformanceProbe {
     const navigationTiming = collectNavigationTiming(navigationEntry)
     this.#addLine(navigationTiming)
     const { responseStart, responseEnd } = navigationEntry
-    this.#getNetworkSpeed(navigationEntry.transferSize, responseEnd - responseStart)
+    this.#getNetworkSpeed(navigationEntry.transferSize, {
+      requestStart: navigationEntry.startTime,
+      responseStart,
+      responseEnd,
+      serverTiming: 0
+    })
   }
 
   #addLine (line) {
@@ -210,8 +226,8 @@ export default class PerformanceProbe {
     }
   }
 
-  #getNetworkSpeed (size, duration) {
+  #getNetworkSpeed (size, costFactors) {
     if (!this.slowNetworkNotifier) return
-    this.slowNetworkNotifier.setSpeedSample({size, duration})
+    this.slowNetworkNotifier.setSpeedSample({size, costFactors})
   }
 }
