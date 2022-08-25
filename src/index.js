@@ -64,7 +64,7 @@ class SlowNetworkMonitor extends EventTarget {
     }
     const event = new CustomEvent(eventType, {detail});
     this.dispatchEvent(event)
-    window.performance?.mark(SlowNetworkMonitor.SLOW_NETWORK_DETECTED, {detail})
+    window.performance?.mark(eventType, {detail})
   }
 }
 
