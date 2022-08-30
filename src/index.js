@@ -36,7 +36,6 @@ class SlowNetworkMonitor extends EventTarget {
     }
     this.networkSpeedSamples.push(sample)
     const { totalSize, totalDuration, speed } = this.calculateSpeedBySamples()
-    console.log('speed', speed)
     if (speed < this.threshold) {
       this.#triggerNetworkSpeedEvent(speed, totalSize, totalDuration, this.SLOW_NETWORK_DETECTED)
     } else if (preSpeed < this.threshold) {

@@ -4,23 +4,25 @@ export default class PerformanceProbe {
   constructor(storage) {
     this.storage = storage;
     this.collectInterval = null
-    this.lastIndex = null
     this.navigationPerfCollected = false
     this.recentFPS = null
-    this.#fpsMeter()
-    if (window.performance) {
-      if (window.performance.getEntriesByType('navigation')[0].domComplete) {
+    this.enableCollect = false
+    if (window.performance && window.PerformanceObserver) {
+      this.enableCollect = true
+      if (document.readyState === 'complete') {
         this.#probe()
       } else {
-        window.addEventListener('load', () => {
-          this.#probe()
+        document.addEventListener('readystatechange', (event) => {
+          if (document.readyState === 'complete') {
+            this.#probe()
+          }
         })
       }
     }
   }
 
   addApiMeasureResult (xhr, args, traceIdKey) {
-    if (!window.performance) return
+    if (!this.enableCollect) return
     const duration = (xhr.completedAt - xhr.xhrOpenedAt).toFixed(2)
     const ttfb = (xhr.startReceiveAt - xhr.xhrOpenedAt).toFixed(2)
     const networkcost = (xhr.completedAt - xhr.startReceiveAt).toFixed(2)
@@ -67,27 +69,29 @@ export default class PerformanceProbe {
   }
 
   #probe () {
-    this.collectInterval = setInterval(() => {
-      this.#collect()
-    }, 1000)
+    const supportedPOTypes = PerformanceObserver.supportedEntryTypes
+    window.performance.getEntries().forEach(entry => {
+      this.#collect(entry)
+    })
+    this.observer = new PerformanceObserver((list, obj) => {
+      list.getEntries().forEach(entry => {
+        this.#collect(entry)
+      })
+    });
+    this.observer.observe({entryTypes: supportedPOTypes})
+    this.#fpsMeter()
   }
 
-  #collect () {
-    const entries = performance.getEntries()
-    if (!this.navigationPerfCollected) {
-      const entry = entries.filter(entry => entry.entryType === 'navigation')[0]
+  #collect (entry) {
+    if (entry.entryType === 'navigation') {
       this.#collectNavigation(entry)
-      this.lastIndex = 0
       if (this.accumulatedNetworkCostMonitor)
         this.accumulatedNetworkCostMonitor.onNetworkCost(entry)
-    }
-    entries.slice(this.lastIndex + 1).forEach(entry => {
-      if (entry.name.includes('api/mara/report')) return
+    } else if (!entry.name.includes('api/mara/report')) {
       this.#reportNormalResourcePerf(entry)
       if (this.accumulatedNetworkCostMonitor)
         this.accumulatedNetworkCostMonitor.onNetworkCost(entry)
-    })
-    this.lastIndex = entries.length - 1
+    }
   }
 
   #reportNormalResourcePerf (entry) {
@@ -115,7 +119,9 @@ export default class PerformanceProbe {
   }
 
   #collectNavigation (navigationEntry) {
-    this.navigationPerfCollected = true
+    if (this.navigationPerfCollected) return
+    if (navigationEntry.domComplete > 0)
+      this.navigationPerfCollected = true
     const collectDNSPerf = navigationPerf => {
       return {
         entryType: navigationEntry.entryType,
