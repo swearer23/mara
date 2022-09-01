@@ -1,12 +1,14 @@
 import { tryStringify } from "../util/util";
 
 export default class PerformanceProbe {
-  constructor(storage) {
+  constructor(storage, env) {
     this.storage = storage;
+    this.env = env
     this.collectInterval = null
     this.navigationPerfCollected = false
     this.recentFPS = null
     this.enableCollect = false
+    this.#fpsMeter()
     if (window.performance && window.PerformanceObserver) {
       this.enableCollect = true
       if (document.readyState === 'complete') {
@@ -69,9 +71,17 @@ export default class PerformanceProbe {
   }
 
   #probe () {
-    const supportedPOTypes = PerformanceObserver.supportedEntryTypes
+    const supportedPOTypes = this.env === 'uat' ? PerformanceObserver.supportedEntryTypes : [
+      'navigation',
+      'resource',
+      'paint',
+      'largest-contentful-paint',
+      'mark',
+      'measure'
+    ]
     window.performance.getEntries().forEach(entry => {
-      this.#collect(entry)
+      if (supportedPOTypes.includes(entry.entryType))
+        this.#collect(entry)
     })
     this.observer = new PerformanceObserver((list, obj) => {
       list.getEntries().forEach(entry => {
@@ -79,7 +89,6 @@ export default class PerformanceProbe {
       })
     });
     this.observer.observe({entryTypes: supportedPOTypes})
-    this.#fpsMeter()
   }
 
   #collect (entry) {
@@ -95,7 +104,8 @@ export default class PerformanceProbe {
   }
 
   #reportNormalResourcePerf (entry) {
-    if (entry.entryType === 'resource' && entry.initiatorType !== 'xmlhttprequest') {
+    if (entry.initiatorType === 'xmlhttprequest') return
+    if (entry.entryType === 'resource') {
       const start = Math.max(entry.startTime, entry.fetchStart).toFixed(2)
       const end = entry.responseEnd.toFixed(2)
       this.#addLine({

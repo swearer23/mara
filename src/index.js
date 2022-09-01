@@ -154,7 +154,7 @@ class Mara {
 
   init() {
     this.storage = new Storage(this.appname, this.appid, this.sessionId, this.env)
-    this.performance = new performance(this.storage)
+    this.performance = new performance(this.storage, this.env)
     new WinErr(this.storage)
     new AjaxErr(this.storage, {
       autoTraceId: this.autoTraceId,

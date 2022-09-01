@@ -91,11 +91,11 @@ class AjaxErr {
     xhr.addEventListener('readystatechange', () => {
       const currentXHR = xhrs[xhr.__xhrid]
       if (window.performance && currentXHR) {
-        if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED)
+        if (xhr.readyState === 2)
           currentXHR.startRequestAt = window.performance.now()
-        if (xhr.readyState === XMLHttpRequest.LOADING)
+        if (xhr.readyState === 3)
           currentXHR.startReceiveAt = window.performance.now()
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
           currentXHR.completedAt = window.performance.now()
           currentXHR.serverTiming = that.getServerTiming(xhr)
           this.onApiMeasured(Object.assign({}, currentXHR), [...args], this.traceIdKey)
