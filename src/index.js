@@ -122,13 +122,13 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
  */
 class Mara {
   constructor(appname, appid, {
-    env = 'uat',
+    env,
     autoTraceId = false,
     traceIdKey = 'x-mara-trace-id',
     sessionIdKey = 'x-mara-session-id',
     excludeAjaxURL = []
   }) {
-    this.checkParams(appname, appid)
+    this.checkParams(appname, appid, env)
     this.appname = appname
     this.appid = appid
     this.env = env
@@ -143,12 +143,15 @@ class Mara {
     this.init()
   }
 
-  checkParams(appname, appid) {
+  checkParams(appname, appid, env) {
     if (!appname) {
       throw Error('appname 必传')
     }
     if (!appid) {
       throw Error('appid 必传')
+    }
+    if (!['uat', 'prod'].includes(env)) {
+      throw Error('env 必传，可选值：uat | prod')
     }
   }
 
