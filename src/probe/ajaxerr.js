@@ -42,7 +42,7 @@ class AjaxErr {
       )
       return serverTiming
     } else {
-      console.warn(`XHR for ${xhr.responseURL} Response does not provide a valid header Date. Try to check if the response headers include Date, or this header is included in Access-Control-Expose-Headers`)
+      console.warn(`XHR for ${xhr.responseURL} Response does not provide a valid header server-timing. Try to check if the response headers include Date, or this header is included in Access-Control-Expose-Headers`)
       return 0
     }
   }

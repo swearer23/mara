@@ -128,6 +128,9 @@ class Mara {
     sessionIdKey = 'x-mara-session-id',
     excludeAjaxURL = []
   }) {
+    if (window.__mara_id__ && window[window.__mara_id__]) {
+      return window[window.__mara_id__]
+    }
     this.checkParams(appname, appid, env)
     this.appname = appname
     this.appid = appid
@@ -141,6 +144,8 @@ class Mara {
     this.userid = null
     this.sessionId = nanoid(16)
     this.init()
+    window.__mara_id__ = this.sessionId
+    window[this.sessionId] = this
   }
 
   checkParams(appname, appid, env) {
