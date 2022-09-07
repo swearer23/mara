@@ -29,7 +29,7 @@ class AjaxErr {
     this.sessionIdKey = options.sessionIdKey
     this.onApiMeasured = options.onApiMeasured
     options.excludeAjaxURL.push('api/mara/report')
-    this.excludeAjaxURLRegex = new RegExp(`(${options.excludeAjaxURL.join('|')})$`)
+    this.excludeAjaxURLRegex = new RegExp(`(${options.excludeAjaxURL.join('|')})`)
     this.probe()
   }
 
