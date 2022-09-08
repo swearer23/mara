@@ -51,14 +51,25 @@
   <script src="../dist/mara.umd.js"></script>
   <script>
     const render = () => {
-        // axios.defaults.withCredentials = true;
-        // const csi = new Mara(config);
-        const csi = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
-          env: 'uat',
-          // autoTraceId: true,
-          // sessionIdKey: 'davinci-request-id',
-          // traceIdKey: 'davinci-trace-id',
-        });
+      // axios.defaults.withCredentials = true;
+      // const csi = new Mara(config);
+      const csi = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
+        env: 'uat',
+        // autoTraceId: true,
+        // sessionIdKey: 'davinci-request-id',
+        // traceIdKey: 'davinci-trace-id',
+      });
+      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
+      const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
+      slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt => {
+        console.log(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt)
+      })
+      slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt => {
+        console.log(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt)
+      })
+      accumulatedNetworkCostMonitor.addEventListener(accumulatedNetworkCostMonitor.ACCUMULATED_NETWORK_COST_DETECTED, evt => {
+        console.log(evt)
+      })
         console.log(csi.sessionId, window.__mara_version__)
         const btnError = document.getElementById('btn-error');
         const btnRequest = document.getElementById('btn-request');
@@ -67,7 +78,6 @@
         btnError.addEventListener('click', () => {
           test(123);
         });
-        console.log(document.aaa)
         btnRequest.addEventListener('click', () => {
           axios({
             method: 'post',

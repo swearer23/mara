@@ -124,8 +124,6 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
 const globalInstanceGet = () => {
   if (window.__mara_id__ && window[window.__mara_id__])
     return window[window.__mara_id__]
-  if (document.__mara_id__ && document[document.__mara_id__])
-    return document[document.__mara_id__]
   return false
 }
 
@@ -133,10 +131,17 @@ const globalInstanceSet = (instanceId, instance, version) => {
   window.__mara_version__ = version
   window.__mara_id__ = instanceId
   window[instanceId] = instance
-  if (window.__POWERED_BY_QIANKUN__) {
-    document.__mara_id__ = instanceId
-    document[instanceId] = instance
+}
+
+class FakeMara {
+  monitorSlowNetworkAt () {
+    return new EventTarget()
   }
+  monitorAccumulatedNetworkCost () {
+    return new EventTarget()
+  }
+  setUser () {}
+  probe () {}
 }
 
 class Mara {
@@ -147,9 +152,13 @@ class Mara {
     sessionIdKey = 'x-mara-session-id',
     excludeAjaxURL = []
   }) {
-    this.version = 'process.env.mara_version'
+    if (window.__POWERED_BY_QIANKUN__) {
+      return new FakeMara()
+    }
     const globalInstance = globalInstanceGet()
     if (globalInstance) return globalInstance
+    
+    this.version = 'process.env.mara_version'
     this.checkParams(appname, appid, env)
     this.appname = appname
     this.appid = appid
@@ -166,7 +175,7 @@ class Mara {
     this.init()
   }
 
-  checkParams(appname, appid, env) {
+  #checkParams(appname, appid, env) {
     if (!appname) {
       throw Error('appname 必传')
     }
@@ -178,7 +187,7 @@ class Mara {
     }
   }
 
-  init() {
+  #init() {
     this.storage = new Storage(this.appname, this.appid, this.sessionId, this.env, this.version)
     this.performance = new performance(this.storage, this.env)
     new WinErr(this.storage)
