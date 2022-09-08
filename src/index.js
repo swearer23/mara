@@ -120,6 +120,24 @@ class AccumulatedNetworkCostMonitor extends EventTarget {
  *      env: 'uat | prod'
  *    }
  */
+
+const globalInstanceGet = () => {
+  if (window.__mara_id__ && window[window.__mara_id__])
+    return window[window.__mara_id__]
+  if (document.__mara_id__ && document[document.__mara_id__])
+    return document[document.__mara_id__]
+  return false
+}
+
+const globalInstanceSet = (instanceId, instance) => {
+  window.__mara_id__ = instanceId
+  window[instanceId] = instance
+  if (window.__POWERED_BY_QIANKUN__) {
+    document.__mara_id__ = instanceId
+    document[instanceId] = instance
+  }
+}
+
 class Mara {
   constructor(appname, appid, {
     env,
@@ -128,9 +146,8 @@ class Mara {
     sessionIdKey = 'x-mara-session-id',
     excludeAjaxURL = []
   }) {
-    if (window.__mara_id__ && window[window.__mara_id__]) {
-      return window[window.__mara_id__]
-    }
+    const globalInstance = globalInstanceGet()
+    if (globalInstance) return globalInstance
     this.checkParams(appname, appid, env)
     this.appname = appname
     this.appid = appid
@@ -143,9 +160,8 @@ class Mara {
     this.excludeAjaxURL = excludeAjaxURL
     this.userid = null
     this.sessionId = nanoid(16)
+    globalInstanceSet(this.sessionId, this)
     this.init()
-    window.__mara_id__ = this.sessionId
-    window[this.sessionId] = this
   }
 
   checkParams(appname, appid, env) {

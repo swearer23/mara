@@ -68,6 +68,9 @@ const config = {
     process.argv.indexOf('-w') !== -1 && serve({
       open: true,
       port: 8888,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       openPage: '/demo/demo.html',
     }),
   ],

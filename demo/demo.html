@@ -43,72 +43,105 @@
     <h3 class="title">csijs前端日志系统，测试网页地址</h3>
     <div class="show">
       <div id="btn-error" class="btn">制造错误</div>
-      <div id="btn-report" class="btn">发送日志</div>
       <div id="btn-request" class="btn">发送请求</div>
-      <div id="btn-toggle-showpage" class="btn">自定义触发弹窗</div>
-      <div id="btn-custom-msg" class="btn">自定义日志信息</div>
+      <div id="btn-set-user" class="btn">设置用户ID(demoUser)</div>
+      <div id="btn-custom-msg" class="btn">发送实时日志</div>
     </div>
   </body>
   <script src="../dist/mara.umd.js"></script>
-  <script type="module">
-    // import Mara from "../dist/mara.esm.js";
-    const params = new URL(location.href).searchParams;
-    const inputConfig = {}
-    for (const [key, value] of params.entries()) {
-      inputConfig[key] = value
-    }
-    const defaultConfig = {
-      feID: 'lafengH5',
-      appid: '945c1315b608be26bb32d15db8f6c806',
-      // maxLine: 2,
-      // logAjaxTrace: true,
-      autoReport: true,
-      operationMethod: 'upload',
-      containerFontSize: '14px',
-      env: 'prod'
-      // excludeAjaxKeywords: ['julianos']
-      // customPanelTrigger: true
-    }
-    const config = { ...defaultConfig, ...inputConfig }
-    console.log(config)
-    window.onload = () => {
-      // axios.defaults.withCredentials = true;
-      const csi = new Mara(config);
-      const btnError = document.getElementById('btn-error');
-      const btnReport = document.getElementById('btn-report');
-      const btnRequest = document.getElementById('btn-request');
-      const btnTogglePage = document.getElementById('btn-toggle-showpage');
-      const btnCustomMsg = document.getElementById('btn-custom-msg');
-      btnError.addEventListener('click', () => {
-        test(123);
-      });
-      btnReport.addEventListener('click', () => {
-        csi.report();
-      });
-
-      btnRequest.addEventListener('click', () => {
-        axios({
-          method: 'post',
-          url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
-          headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
-          withCredentials: true,
-          data: {
-            guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
-          }
+  <script>
+    const render = () => {
+        // axios.defaults.withCredentials = true;
+        // const csi = new Mara(config);
+        const csi = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
+          env: 'uat',
+          // autoTraceId: true,
+          // sessionIdKey: 'davinci-request-id',
+          // traceIdKey: 'davinci-trace-id',
+        });
+        console.log(csi.sessionId)
+        const btnError = document.getElementById('btn-error');
+        const btnRequest = document.getElementById('btn-request');
+        const btnSetUser = document.getElementById('btn-set-user');
+        const btnCustomMsg = document.getElementById('btn-custom-msg');
+        btnError.addEventListener('click', () => {
+          test(123);
+        });
+        console.log(document.aaa)
+        btnRequest.addEventListener('click', () => {
+          axios({
+            method: 'post',
+            url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
+            headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+            withCredentials: true,
+            data: {
+              guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+            }
+          })
+          axios.get('https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/', {
+            headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+          })
         })
-        axios.get('https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/', {
-          headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+
+        btnSetUser.addEventListener('click', () => {
+          csi.setUser('demoUser')
         })
-      })
 
-      btnTogglePage.addEventListener('click', () => {
-        csi.showPanel()
-      })
+        btnCustomMsg.addEventListener('click', () => {
+          csi.probe('hello world', 'the result of XXX is', 23, {a: 1, b: 2, c: {d: 3, e: 5}}, {f: 6, g: 7})
+        })
 
-      btnCustomMsg.addEventListener('click', () => {
-        csi.probe('hello world', {a: 1, b: 2, c: {d: 3, e: 5}})
-      })
-    }
+        performance.mark('settimeoutstart')
+        setTimeout(() => {
+          performance.mark('settimeoutend')
+          performance.measure(
+            'mysettimeout',
+            'settimeoutstart',
+            'settimeoutend'
+          )
+        }, 2000)
+        console.log(window.__POWERED_BY_QIANKUN__, 111)
+        return Promise.resolve();
+    };
+
+    ((global) => {
+      global['purehtml'] = {
+        bootstrap: () => {
+          console.log('purehtml bootstrap');
+          return Promise.resolve();
+        },
+        mount: () => {
+          console.log('purehtml mount');
+          return render();
+        },
+        unmount: () => {
+          console.log('purehtml unmount');
+          return Promise.resolve();
+        },
+      };
+    })(window);
+    window.onload = render
+    // // import Mara from "../dist/mara.esm.js";
+    // const params = new URL(location.href).searchParams;
+    // const inputConfig = {}
+    // for (const [key, value] of params.entries()) {
+    //   inputConfig[key] = value
+    // }
+    // const defaultConfig = {
+    //   feID: 'lafengH5',
+    //   appid: '945c1315b608be26bb32d15db8f6c806',
+    //   // maxLine: 2,
+    //   // logAjaxTrace: true,
+    //   autoReport: true,
+    //   operationMethod: 'upload',
+    //   containerFontSize: '14px',
+    //   env: 'prod'
+    //   // excludeAjaxKeywords: ['julianos']
+    //   // customPanelTrigger: true
+    // }
+    // const config = { ...defaultConfig, ...inputConfig }
+    // console.log(config)
+    
     
     // const oError = window.console.error
     // window.console.error = function () {
