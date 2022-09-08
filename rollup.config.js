@@ -7,6 +7,7 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
 import css from "rollup-plugin-import-css";
 import replace from '@rollup/plugin-replace';
+const version = require('./package.json').version;
 
 const output = [
   {
@@ -51,9 +52,10 @@ const config = {
       browser: true
     }),
     replace({
+      'process.env.mara_version': version,
       preventAssignment: true,
       include: ['src/**/*.js'],
-      'process.env.DEBUG': process.env.DEBUG || false
+      'process.env.DEBUG': process.env.DEBUG || false,
     }),
     css(),
     babel({

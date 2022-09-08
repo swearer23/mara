@@ -3,7 +3,7 @@ import axios from 'axios'
 import { getAxiosConfig } from '../util/util'
 
 export default class Storage {
-  constructor(appname, appid, sessionId, env) {
+  constructor(appname, appid, sessionId, env, version) {
     if (Storage.instance) {
       return Storage.instance
     } else {
@@ -12,6 +12,7 @@ export default class Storage {
       this.appid = appid
       this.sessionId = sessionId
       this.env = env
+      this.version = version
       this.userid = null
       this.#startPolling()
       Storage.instance = this
@@ -69,7 +70,8 @@ export default class Storage {
       ua: navigator.userAgent,
       url: location ? location.href : '',
       appname: this.appname,
-      sessionId: this.sessionId
+      sessionId: this.sessionId,
+      version: this.version
     })
     return template
   }
