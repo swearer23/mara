@@ -159,7 +159,7 @@ class Mara {
     if (globalInstance) return globalInstance
     
     this.version = 'process.env.mara_version'
-    this.checkParams(appname, appid, env)
+    this.#checkParams(appname, appid, env)
     this.appname = appname
     this.appid = appid
     this.env = env
@@ -172,7 +172,7 @@ class Mara {
     this.userid = null
     this.sessionId = nanoid(16)
     globalInstanceSet(this.sessionId, this, this.version)
-    this.init()
+    this.#init()
   }
 
   #checkParams(appname, appid, env) {
