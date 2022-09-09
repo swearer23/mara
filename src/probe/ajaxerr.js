@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid";
-import { tryStringify } from "../util/util";
 
 const xhrs = {};
 
@@ -30,7 +29,19 @@ class AjaxErr {
     this.onApiMeasured = options.onApiMeasured
     options.excludeAjaxURL.push('api/mara/report')
     this.excludeAjaxURLRegex = new RegExp(`(${options.excludeAjaxURL.join('|')})`)
+    this.gcTimer = this.#xhrsGC()
     this.probe()
+  }
+
+  #xhrsGC () {
+    return setInterval(() => {
+      for (const key in xhrs) {
+        if (window.performance.now() - xhrs[key].completedAt > 60000) {
+          console.debug(`XHR ${key} is GCed`)
+          delete xhrs[key]
+        }
+      }
+    }, 5000)
   }
 
   getServerTiming (xhr) {
@@ -146,9 +157,6 @@ class AjaxErr {
         url: args[1]
       }
     }
-    context.payload && (line.payload = tryStringify(context.payload))
-    context.response && (line.response= tryStringify(context.response))
-    context.headers && (line.headers = tryStringify(context.headers))
     this.storage.addLine(line);
   }
 }

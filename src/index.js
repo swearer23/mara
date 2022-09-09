@@ -144,6 +144,13 @@ class FakeMara {
   probe () {}
 }
 
+const needFakeInit = () => {
+  if (window.__POWERED_BY_QIANKUN__) return true
+  if (!window.performance) return true
+  if (!window.performance.now) return true
+  return false
+}
+
 class Mara {
   constructor(appname, appid, {
     env,
@@ -152,7 +159,7 @@ class Mara {
     sessionIdKey = 'x-mara-session-id',
     excludeAjaxURL = []
   }) {
-    if (window.__POWERED_BY_QIANKUN__) {
+    if (needFakeInit()) {
       return new FakeMara()
     }
     const globalInstance = globalInstanceGet()

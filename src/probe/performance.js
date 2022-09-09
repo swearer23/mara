@@ -49,16 +49,6 @@ export default class PerformanceProbe {
       traceIdKey,
       traceIdValue
     }
-    const { response } = xhr.xhrObject;
-    const { payload, headers } = xhr
-    const context = {
-      payload,
-      headers,
-      response
-    }
-    context.payload && (line.payload = tryStringify(context.payload))
-    context.response && (line.response= tryStringify(context.response))
-    context.headers && (line.headers = tryStringify(context.headers))
     this.#addLine(line)
   }
 
