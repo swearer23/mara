@@ -226,6 +226,8 @@ class Mara {
   }
 
   setUser(userid) {
+    if (this.userid) return
+    this.userid = userid
     this.storage.setUser(userid)
   }
 
