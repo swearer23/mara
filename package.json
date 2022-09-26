@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "2.0.2",
+  "version": "2.0.3-beta",
   "description": "mara是一个前端日志系统, 它将错误信息记录于本地localStorage中。无任何依赖、无入侵性。",
   "main": "./dist/mara.umd.js",
   "directories": {
@@ -9,6 +9,7 @@
   "scripts": {
     "start": "DEBUG=true rollup -c -w",
     "dev": "vite --port 8888",
+    "release": "node scripts/release.mjs",
     "build": "rm -rf ./dist && rollup -c",
     "lint": "eslint ./src",
     "lintfix": "eslint ./src --fix",
@@ -43,6 +44,7 @@
     "babel-jest": "^28.1.3",
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "inquirer": "^9.1.2",
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
     "rollup": "^2.47.0",
