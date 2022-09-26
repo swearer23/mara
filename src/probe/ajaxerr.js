@@ -1,5 +1,7 @@
 import { nanoid } from "nanoid";
 
+let hasWarned = false
+
 const xhrs = {};
 
 const initXhr = () => {
@@ -53,7 +55,10 @@ class AjaxErr {
       )
       return serverTiming
     } else {
-      console.warn(`XHR for ${xhr.responseURL} Response does not provide a valid header server-timing. Try to check if the response headers include Date, or this header is included in Access-Control-Expose-Headers`)
+      if (!hasWarned) {
+        hasWarned = true
+        console.warn(`XHR for ${xhr.responseURL} Response does not provide a valid header server-timing. Try to check if the response headers include Date, or this header is included in Access-Control-Expose-Headers`)
+      }
       return 0
     }
   }

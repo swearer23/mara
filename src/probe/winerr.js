@@ -14,15 +14,22 @@ class WinErr {
   }
 
   probe () {
-    const { onerror } = window;
-    window.onerror = (...args) => {
-      if (typeof onerror === 'function') onerror.apply(this, args);
+    window.addEventListener('error' , errorEvent => {
+      const {
+        message,
+        filename,
+        lineno,
+        colno,
+        error
+      } = errorEvent;
       for (let i = 0; i < ignoredErrors.length; i++) {
-        if (args[0].indexOf(ignoredErrors[i]) === 0) return
+        if (message.indexOf(ignoredErrors[i]) === 0) {
+          console.warn('Ignored error:', message);
+          return
+        }
       }
-      // probe(this.forms, message, url, line);
-      this.pushLine(args[0], args[1], args[2], args[3], args[4]);
-    };
+      this.pushLine(message, filename, lineno, colno, error);
+    })
   }
 
   pushLine (message, url, line, char, err) {
