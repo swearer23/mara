@@ -30,6 +30,10 @@ class WinErr {
       }
       this.pushLine(message, filename, lineno, colno, error);
     })
+
+    window.addEventListener("unhandledrejection", event => {
+      throw event.reason
+    })
   }
 
   pushLine (message, url, line, char, err) {

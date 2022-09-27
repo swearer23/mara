@@ -79,6 +79,11 @@
           test(123);
         });
         btnRequest.addEventListener('click', () => {
+          (new Promise((resolve, reject) => {
+            axios.get('https://s1.longfor.com/public/js/axios.min.js').then(res => {
+              resolve(res);
+            });
+          })).then(res => {test(123)})
           axios({
             method: 'post',
             url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
