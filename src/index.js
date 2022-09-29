@@ -226,7 +226,6 @@ class Mara {
   }
 
   setUser(userid) {
-    if (this.userid) return
     this.userid = userid
     this.storage.setUser(userid)
   }
@@ -248,5 +247,7 @@ class Mara {
 
 Mara.NET_NETWORK_SPEED_MODE = 1
 Mara.GROSS_NETWORK_SPEED_MODE = 2
+
+Mara.ANONYMOUS_USER = '__mara_anonymous_user__'
 
 export default Mara;

@@ -77,7 +77,6 @@ export default class Storage {
   }
 
   setUser (userid) {
-    if (this.userid) return
     this.userid = userid
   }
 

@@ -103,7 +103,10 @@
       })
 
       btnSetUser.addEventListener('click', () => {
-        csi.setUser('demoUser')
+        if (csi.userid === Mara.ANONYMOUS_USER)
+          csi.setUser('demoUser')
+        else
+          csi.setUser(Mara.ANONYMOUS_USER)
       })
 
       btnCustomMsg.addEventListener('click', () => {
