@@ -160,6 +160,7 @@ class Mara {
     sessionIdKey = 'x-mara-session-id',
     excludeAjaxURL = []
   }) {
+    console.warn('need fake mara instance')
     if (needFakeInit()) {
       return new FakeMara()
     }

@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "DEBUG=true rollup -c -w",
-    "dev": "vite --port 8888",
+    "dev": "vite --port 8008 --host 0.0.0.0",
     "release": "node scripts/release.mjs",
     "build": "rm -rf ./dist && rollup -c",
     "lint": "eslint ./src",
