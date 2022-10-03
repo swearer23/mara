@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
   "directories": {
@@ -55,6 +55,7 @@
     "vite": "^3.0.6"
   },
   "dependencies": {
+    "@ungap/event-target": "^0.2.3",
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "nanoid": "^3.3.4"

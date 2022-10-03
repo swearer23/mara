@@ -4,6 +4,7 @@ import FetchErr from './probe/fetcherr';
 import performance from './probe/performance';
 import Storage from './util/storage';
 import { nanoid } from 'nanoid';
+import EventTarget from '@ungap/event-target'
 
 // import { randomFillSync } from 'crypto'
 
@@ -207,6 +208,10 @@ class Mara {
       excludeAjaxURL: this.excludeAjaxURL
     })
     new FetchErr(this.storage)
+    setTimeout(() => {
+      if (!this.userid)
+        this.setUser(Mara.ANONYMOUS_USER)
+    }, 5000)
   }
 
   monitorSlowNetworkAt (threshold, speedDetectMode) {
