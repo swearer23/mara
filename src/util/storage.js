@@ -29,8 +29,8 @@ export default class Storage {
       tempLines = this.__pool__
       this.__pool__ = []
     } else {
-      if (this.__pool__.length > 5) {
-        for(let time = 0; time < 5; time++) {
+      if (this.__pool__.length > 20) {
+        for(let time = 0; time < 20; time++) {
           tempLines.push(this.__pool__.shift())
         }
       } else {

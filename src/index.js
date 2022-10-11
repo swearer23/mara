@@ -147,8 +147,6 @@ class FakeMara {
 
 const needFakeInit = () => {
   if (window.__POWERED_BY_QIANKUN__) return true
-  if (!window.performance) return true
-  if (!window.performance.now) return true
   return false
 }
 

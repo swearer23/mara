@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "DEBUG=true rollup -c -w",
-    "dev": "vite --port 8008 --host 0.0.0.0",
+    "dev": "vite --port 8888 --host 0.0.0.0",
     "release": "node scripts/release.mjs",
     "build": "rm -rf ./dist && rollup -c",
     "lint": "eslint ./src",

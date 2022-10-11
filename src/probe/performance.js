@@ -8,12 +8,13 @@ export default class PerformanceProbe {
     this.navigationPerfCollected = false
     this.recentFPS = null
     this.enableCollect = false
-    this.#fpsMeter()
     if (
       window.performance
+      && window.performance.now
       && window.PerformanceObserver
       && window.PerformanceObserver.supportedEntryTypes
       && window.PerformanceEntry) {
+      this.#fpsMeter()
       this.enableCollect = true
       if (document.readyState === 'complete') {
         this.#probe()
