@@ -4,7 +4,6 @@ import FetchErr from './probe/fetcherr';
 import performance from './probe/performance';
 import Storage from './util/storage';
 import { nanoid } from 'nanoid';
-import EventTarget from '@ungap/event-target'
 
 // import { randomFillSync } from 'crypto'
 
@@ -13,105 +12,6 @@ import EventTarget from '@ungap/event-target'
 //     return randomFillSync(buffer)
 //   }
 // }
-class SlowNetworkMonitor extends EventTarget {
-  constructor (threshold, speedDetectMode = Mara.NET_NETWORK_SPEED_MODE) {
-    super()
-    this.threshold = threshold
-    this.speedDetectMode = speedDetectMode
-    this.networkSpeedSamples = []
-    this.SLOW_NETWORK_DETECTED = 'slow_network_detected';
-    this.SLOW_NETWORK_RECOVERED = 'slow_network_recovered';
-  }
-
-  setSpeedSample (sample) {
-    const { speed: preSpeed } = this.calculateSpeedBySamples()
-    if (this.networkSpeedSamples.length > 4) {
-      this.networkSpeedSamples.shift()
-    }
-    const { requestStart, responseStart, responseEnd, serverTiming } = sample.costFactors
-    if (this.speedDetectMode === Mara.NET_NETWORK_SPEED_MODE) {
-      sample.duration = responseEnd - responseStart
-    }
-    if (this.speedDetectMode === Mara.GROSS_NETWORK_SPEED_MODE) {
-      sample.duration = responseEnd - requestStart - serverTiming
-    }
-    this.networkSpeedSamples.push(sample)
-    const { totalSize, totalDuration, speed } = this.calculateSpeedBySamples()
-    if (speed < this.threshold) {
-      this.#triggerNetworkSpeedEvent(speed, totalSize, totalDuration, this.SLOW_NETWORK_DETECTED)
-    } else if (preSpeed < this.threshold) {
-      this.#triggerNetworkSpeedEvent(speed, totalSize, totalDuration, this.SLOW_NETWORK_RECOVERED)
-    }
-  }
-
-  calculateSpeedBySamples () {
-    const { totalSize, totalDuration } = this.networkSpeedSamples.reduce((acc, cur) => {
-      return {
-        totalSize: acc.totalSize + cur.size,
-        totalDuration: acc.totalDuration + cur.duration
-      }
-    }, {totalSize: 0, totalDuration: 0})
-    const speed = (totalSize / 1024) / (totalDuration / 1000)
-    return { totalSize, totalDuration, speed }
-  }
-
-  #triggerNetworkSpeedEvent(speed, totalSize, totalDuration, eventType) {
-    const detail = {
-      speed,
-      speedText: `${speed} kB/s`,
-      totalSize,
-      totalDuration,
-    }
-    const event = new CustomEvent(eventType, {detail});
-    this.dispatchEvent(event)
-    window.performance?.mark(eventType, {detail})
-  }
-}
-
-class AccumulatedNetworkCostMonitor extends EventTarget {
-  constructor (threshold) {
-    super()
-    this.threshold = threshold
-    this.ntPerfPages = null
-    this.didReport = false
-    this.ACCUMULATED_NETWORK_COST_DETECTED = 'accumulated_network_cost_detected';
-  }
-
-  onNetworkCost (perf) {
-    const { requestStart, responseEnd, fetchStart } = perf
-    const startTime = Math.max(requestStart, fetchStart)
-    if (!startTime || !responseEnd || this.didReport) return
-    const duration = perf.entryType === 'navigation' ? perf.responseEnd - perf.requestStart : perf.duration 
-    if (!this.ntPerfPages) {
-      this.ntPerfPages = {
-        start: startTime,
-        end: responseEnd,
-        duration
-      }
-    } else {
-      if (startTime > this.ntPerfPages.end) {
-        this.ntPerfPages.start = startTime
-        this.ntPerfPages.end = responseEnd
-        this.ntPerfPages.duration += duration
-      } else {
-        if (this.ntPerfPages.end < responseEnd) {
-          this.ntPerfPages.duration += responseEnd - this.ntPerfPages.end
-          this.ntPerfPages.end = responseEnd
-        }
-      }
-    }
-    if (this.ntPerfPages.duration > this.threshold) {
-      const detail = {
-        networkCost: this.ntPerfPages.duration,
-        totalCost: window.performance?.now()
-      }
-      const event = new CustomEvent(this.ACCUMULATED_NETWORK_COST_DETECTED, {detail})
-      this.dispatchEvent(event)
-      window.performance?.mark(this.ACCUMULATED_NETWORK_COST_DETECTED, {detail})
-      this.didReport = true
-    }
-  }
-}
 
 /**
  * @param appid: 项目Id， 必传
@@ -135,12 +35,6 @@ const globalInstanceSet = (instanceId, instance, version) => {
 }
 
 class FakeMara {
-  monitorSlowNetworkAt () {
-    return new EventTarget()
-  }
-  monitorAccumulatedNetworkCost () {
-    return new EventTarget()
-  }
   setUser () {}
   probe () {}
 }
@@ -211,22 +105,6 @@ class Mara {
       if (!this.userid)
         this.setUser(Mara.ANONYMOUS_USER)
     }, 5000)
-  }
-
-  monitorSlowNetworkAt (threshold, speedDetectMode) {
-    if (threshold) {
-      const slowNetworkMonitor = new SlowNetworkMonitor(threshold, speedDetectMode)
-      this.performance.setSlowNetworkNotifier(slowNetworkMonitor)
-      return slowNetworkMonitor
-    }
-  }
-
-  monitorAccumulatedNetworkCost (threshold) {
-    if (threshold) {
-      const accumulatedNetworkCostMonitor = new AccumulatedNetworkCostMonitor(threshold)
-      this.performance.setAccumulatedNetworkCostMonitor(accumulatedNetworkCostMonitor)
-      return accumulatedNetworkCostMonitor
-    }
   }
 
   setUser(userid) {

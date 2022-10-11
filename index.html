@@ -50,9 +50,9 @@
       <div id="btn-custom-msg" class="btn">发送实时日志</div>
     </div>
   </body>
-  <script src="../dist/mara.umd.js"></script>
+  <!-- <script src="../dist/mara.umd.js"></script> -->
   <script type="module">
-    // import Mara from "/src/index.js";
+    import Mara from "/src/index.js";
     window.onload = () => {
       // axios.defaults.withCredentials = true;
       const csi = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
@@ -61,17 +61,6 @@
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
       });
-      // const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
-      // const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
-      // slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt => {
-      //   console.log(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt)
-      // })
-      // slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt => {
-      //   console.log(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt)
-      // })
-      // accumulatedNetworkCostMonitor.addEventListener(accumulatedNetworkCostMonitor.ACCUMULATED_NETWORK_COST_DETECTED, evt => {
-      //   console.log(evt)
-      // })
       const btnError = document.getElementById('btn-error');
       const btnRequest = document.getElementById('btn-request');
       const btnSetUser = document.getElementById('btn-set-user');

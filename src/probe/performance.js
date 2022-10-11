@@ -34,14 +34,7 @@ export default class PerformanceProbe {
     const ttfb = (xhr.startReceiveAt - xhr.xhrOpenedAt).toFixed(2)
     const networkcost = (xhr.completedAt - xhr.startReceiveAt).toFixed(2)
     const traceIdValue = xhr.headers[traceIdKey]
-    const responseSize = xhr.xhrObject.response.length
     const serverTiming = xhr.serverTiming
-    this.#getNetworkSpeed(responseSize, {
-      requestStart: xhr.xhrOpenedAt,
-      responseStart: xhr.startReceiveAt,
-      responseEnd: xhr.completedAt,
-      serverTiming
-    })
     const line = {
       entryType: 'xmlhttprequest',
       entryName: args[1],
@@ -55,14 +48,6 @@ export default class PerformanceProbe {
       traceIdValue
     }
     this.#addLine(line)
-  }
-
-  setSlowNetworkNotifier (slowNetworkNotifier) {
-    this.slowNetworkNotifier = slowNetworkNotifier
-  }
-
-  setAccumulatedNetworkCostMonitor (accumulatedNetworkCostMonitor) {
-    this.accumulatedNetworkCostMonitor = accumulatedNetworkCostMonitor
   }
 
   #probe () {
@@ -89,12 +74,8 @@ export default class PerformanceProbe {
   #collect (entry) {
     if (entry.entryType === 'navigation') {
       this.#collectNavigation(entry)
-      if (this.accumulatedNetworkCostMonitor)
-        this.accumulatedNetworkCostMonitor.onNetworkCost(entry)
     } else if (!entry.name.includes('api/mara/report')) {
       this.#reportNormalResourcePerf(entry)
-      if (this.accumulatedNetworkCostMonitor)
-        this.accumulatedNetworkCostMonitor.onNetworkCost(entry)
     }
   }
 
@@ -199,13 +180,6 @@ export default class PerformanceProbe {
     this.#addLine(domComplete)
     const navigationTiming = collectNavigationTiming(navigationEntry)
     this.#addLine(navigationTiming)
-    const { responseStart, responseEnd } = navigationEntry
-    this.#getNetworkSpeed(navigationEntry.transferSize, {
-      requestStart: navigationEntry.startTime,
-      responseStart,
-      responseEnd,
-      serverTiming: 0
-    })
   }
 
   #addLine (line) {
@@ -246,10 +220,5 @@ export default class PerformanceProbe {
         requestAnimationFrame(loop);
       });
     }
-  }
-
-  #getNetworkSpeed (size, costFactors) {
-    if (!this.slowNetworkNotifier) return
-    this.slowNetworkNotifier.setSpeedSample({size, costFactors})
   }
 }
