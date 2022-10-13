@@ -72,6 +72,7 @@
       btnRequest.addEventListener('click', () => {
         (new Promise((resolve, reject) => {
           axios.get('https://s1.longfor.com/public/js/axios.min.js').then(res => {
+            reject('something')
             resolve(res);
           });
         })).then(res => {test(123)})
@@ -132,7 +133,7 @@
     setTimeout(() => {
       window.crossoriginscripterror()
     }, 5000)
-    
+
     // const oError = window.console.error
     // window.console.error = function () {
     //   console.debug(arguments)

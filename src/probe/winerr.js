@@ -31,8 +31,9 @@ class WinErr {
       this.pushLine(message, filename, lineno, colno, error);
     })
 
-    window.addEventListener("unhandledrejection", event => {
-      throw event.reason
+    window.addEventListener("unhandledrejection", (event) => {
+      const { reason } = event;
+      this.pushLine(reason, '', '', '', reason);
     })
   }
 
