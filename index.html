@@ -72,7 +72,7 @@
       btnRequest.addEventListener('click', () => {
         (new Promise((resolve, reject) => {
           axios.get('https://s1.longfor.com/public/js/axios.min.js').then(res => {
-            reject('something')
+            reject({a: 'b'})
             resolve(res);
           });
         })).then(res => {test(123)})

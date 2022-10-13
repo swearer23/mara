@@ -2,6 +2,8 @@
 // https://w3c.github.io/html/webappapis.html#the-errorevent-interface
 // 探针
 
+import { tryStringify } from "../util/util"
+
 const ignoredErrors = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications'
@@ -33,7 +35,7 @@ class WinErr {
 
     window.addEventListener("unhandledrejection", (event) => {
       const { reason } = event;
-      this.pushLine(reason, '', '', '', reason);
+      this.pushLine(`Uncaught (in promise): ${tryStringify(reason)}`, '', '', '');
     })
   }
 
