@@ -2,6 +2,19 @@
 import axios from 'axios'
 import { getAxiosConfig } from '../util/util'
 
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
 export default class Storage {
   constructor(appname, appid, sessionId, env, version) {
     if (Storage.instance) {
@@ -48,14 +61,14 @@ export default class Storage {
       const path = 'api/mara/report'
       const data = lines.map(line => {
         line.user = this.userid
-        return line
-      })
-      data.forEach(line => {
         try {
-          JSON.stringify(line, null, 2)
-        } catch (err) {
-          console.error(err)
-          console.error(line)
+          JSON.stringify(line)
+          return line
+        } catch {
+          return {
+            circular: true,
+            ...JSON.parse(JSON.stringify(line, getCircularReplacer()))
+          }
         }
       })
       const config = getAxiosConfig(this.env, 'post', path, data, {
