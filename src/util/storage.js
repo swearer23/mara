@@ -50,6 +50,14 @@ export default class Storage {
         line.user = this.userid
         return line
       })
+      data.forEach(line => {
+        try {
+          JSON.stringify(line, null, 2)
+        } catch (err) {
+          console.error(err)
+          console.error(line)
+        }
+      })
       const config = getAxiosConfig(this.env, 'post', path, data, {
         appname: this.appname,
         appid: this.appid
