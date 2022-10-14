@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "2.1.1-alpha",
+  "version": "2.1.1-beta",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
   "directories": {
@@ -58,7 +58,6 @@
   "dependencies": {
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
-    "flatted": "^3.2.7",
     "nanoid": "^3.3.4"
   }
 }

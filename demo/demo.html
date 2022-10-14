@@ -59,17 +59,6 @@
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
       });
-      const slowNetworkNotifier = csi.monitorSlowNetworkAt(1000)
-      const accumulatedNetworkCostMonitor = csi.monitorAccumulatedNetworkCost(200)
-      slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt => {
-        console.log(slowNetworkNotifier.SLOW_NETWORK_DETECTED, evt)
-      })
-      slowNetworkNotifier.addEventListener(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt => {
-        console.log(slowNetworkNotifier.SLOW_NETWORK_RECOVERED, evt)
-      })
-      accumulatedNetworkCostMonitor.addEventListener(accumulatedNetworkCostMonitor.ACCUMULATED_NETWORK_COST_DETECTED, evt => {
-        console.log(evt)
-      })
         console.log(csi.sessionId, window.__mara_version__)
         const btnError = document.getElementById('btn-error');
         const btnRequest = document.getElementById('btn-request');

@@ -1,7 +1,6 @@
 
 import axios from 'axios'
 import { getAxiosConfig } from '../util/util'
-import { stringify, toJSON } from 'flatted';
 
 export default class Storage {
   constructor(appname, appid, sessionId, env, version) {
@@ -49,14 +48,6 @@ export default class Storage {
       const path = 'api/mara/report'
       const data = lines.map(line => {
         line.user = this.userid
-        try {
-          JSON.stringify(line)
-        } catch (err) {
-          return {
-            circular: true,
-            ...toJSON(stringify(line))
-          }
-        }
         return line
       })
       const config = getAxiosConfig(this.env, 'post', path, data, {

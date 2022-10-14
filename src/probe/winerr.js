@@ -35,7 +35,13 @@ class WinErr {
 
     window.addEventListener("unhandledrejection", (event) => {
       const { reason } = event;
-      this.pushLine(`Uncaught (in promise): ${tryStringify(reason)}`, '', '', '');
+      if (reason instanceof Error) {
+        this.pushLine(reason.message, reason.fileName, reason.lineNumber, reason.columnNumber, reason);
+      } else if (typeof reason === 'string') {
+        this.pushLine(`Uncaught (in promise): ${reason}`, '', '', '');
+      } else if (typeof reason === 'object') {
+        this.pushLine(`Uncaught (in promise): ${tryStringify(reason)}`, '', '', '');
+      }
     })
   }
 
