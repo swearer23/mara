@@ -7,6 +7,7 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload'
 import css from "rollup-plugin-import-css";
 import replace from '@rollup/plugin-replace';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 const version = require('./package.json').version;
 
 const output = [
@@ -18,7 +19,8 @@ const output = [
     name: 'Mara',
     exports: 'named',
     externalLiveBindings: false,
-    freeze: false
+    freeze: false,
+    sourcemap: true
   }
 ]
 
@@ -31,7 +33,8 @@ if (process.argv.indexOf('-w') === -1) {
     name: 'Mara',
     exports: 'default',
     externalLiveBindings: false,
-    freeze: false
+    freeze: false,
+    sourcemap: true
   })
 }
 
@@ -47,6 +50,7 @@ const config = {
   },
   plugins: [
     process.argv.indexOf('-w') > -1 && livereload(),
+    sourcemaps(),
     nodeResolve({
       preferBuiltins: true,
       browser: true
