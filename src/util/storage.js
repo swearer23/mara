@@ -2,19 +2,6 @@
 import axios from 'axios'
 import { getAxiosConfig } from '../util/util'
 
-const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  };
-};
-
 export default class Storage {
   constructor(appname, appid, sessionId, env, version) {
     if (Storage.instance) {
@@ -38,18 +25,13 @@ export default class Storage {
  
   #readLines () {
     let tempLines = []
-    if (this.env === 'prod') {
+    if (this.__pool__.length > 30) {
+      for(let time = 0; time < 30; time++) {
+        tempLines.push(this.__pool__.shift())
+      }
+    } else {
       tempLines = this.__pool__
       this.__pool__ = []
-    } else {
-      if (this.__pool__.length > 20) {
-        for(let time = 0; time < 20; time++) {
-          tempLines.push(this.__pool__.shift())
-        }
-      } else {
-        tempLines = this.__pool__
-        this.__pool__ = []
-      }
     }
     return tempLines
   }
@@ -61,21 +43,15 @@ export default class Storage {
       const path = 'api/mara/report'
       const data = lines.map(line => {
         line.user = this.userid
-        try {
-          JSON.stringify(line)
-          return line
-        } catch {
-          return {
-            circular: true,
-            ...JSON.parse(JSON.stringify(line, getCircularReplacer()))
-          }
-        }
+        return line
       })
       const config = getAxiosConfig(this.env, 'post', path, data, {
         appname: this.appname,
         appid: this.appid
       })
-      axios(config)
+      axios(config).catch(err => {
+        this.__pool__ = lines.concat(this.__pool__)
+      })
     }
   }
 

@@ -51,11 +51,9 @@ export default class PerformanceProbe {
   }
 
   #probe () {
-    const supportedPOTypes = this.env === 'uat' ? PerformanceObserver.supportedEntryTypes : [
+    const supportedPOTypes = [
       'navigation',
       'resource',
-      'paint',
-      'largest-contentful-paint',
       'mark',
       'measure'
     ]
@@ -99,8 +97,6 @@ export default class PerformanceProbe {
         duration: entry.duration.toFixed(2),
         perfDetail: tryStringify(entry.detail)
       })
-    } else {
-      this.#addLine(entry.toJSON())
     }
   }
 
