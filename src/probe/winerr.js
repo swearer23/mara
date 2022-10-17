@@ -35,6 +35,9 @@ class WinErr {
 
     window.addEventListener("unhandledrejection", (event) => {
       const { reason } = event;
+      if (reason?.isAxiosError) {
+        return console.log('Axios Error:', event)
+      }
       if (reason instanceof Error) {
         this.pushLine(reason.message, reason.fileName, reason.lineNumber, reason.columnNumber, reason);
       } else if (typeof reason === 'string') {
