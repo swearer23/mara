@@ -66,7 +66,7 @@
       const btnSetUser = document.getElementById('btn-set-user');
       const btnCustomMsg = document.getElementById('btn-custom-msg');
       btnError.addEventListener('click', () => {
-        test(123);
+        longju(123);
       });
 
       btnRequest.addEventListener('click', () => {
@@ -89,8 +89,8 @@
           })
         })
         
-        axios.get('https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/', {
-          headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+        axios.get('https://api-uat.longfor.com/julianos-uat/', {
+          headers: {'X-Gaia-Api-Key': '791f6690-0714-445f-9273-78a3199622d2'},
         }).then(res => {
           err()
         })

@@ -3,6 +3,7 @@
 // 探针
 
 import { tryStringify } from "../util/util"
+import * as stackTraceParser from 'stacktrace-parser'
 
 const ignoredErrors = [
   'ResizeObserver loop limit exceeded',
@@ -24,6 +25,10 @@ class WinErr {
         colno,
         error
       } = errorEvent;
+      if (error?.stack?.includes('longju')) {
+        const stack = stackTraceParser.parse(error.stack)
+        if (stack?.length && stack[0]?.file.includes('public/js/longju/1.0/longju.min.js')) return
+      }
       for (let i = 0; i < ignoredErrors.length; i++) {
         if (message.indexOf(ignoredErrors[i]) === 0) {
           console.warn('Ignored error:', message);
