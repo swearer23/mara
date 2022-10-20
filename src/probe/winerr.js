@@ -7,7 +7,8 @@ import * as stackTraceParser from 'stacktrace-parser'
 
 const ignoredErrors = [
   'ResizeObserver loop limit exceeded',
-  'ResizeObserver loop completed with undelivered notifications'
+  'ResizeObserver loop completed with undelivered notifications',
+  'Uncaught ReferenceError: __wm_capture_callback__ is not defined'
 ]
 
 const isIgnoredError = (stackString, filename, line, col) => {
