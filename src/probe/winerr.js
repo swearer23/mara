@@ -10,6 +10,17 @@ const ignoredErrors = [
   'ResizeObserver loop completed with undelivered notifications'
 ]
 
+const isIgnoredError = (stackString, filename, line, col) => {
+  const stack = stackTraceParser.parse(stackString)
+  if (!stack) return
+  if (stack.length === 0) return
+  const firstStack = stack[0]
+  if (!firstStack.file.includes(filename)) return
+  if (firstStack.lineNumber !== line) return
+  if (firstStack.column !== col) return
+  return true
+}
+
 class WinErr {
   constructor (storage) {
     this.storage = storage
@@ -25,9 +36,9 @@ class WinErr {
         colno,
         error
       } = errorEvent;
-      if (error?.stack?.includes('longju')) {
-        const stack = stackTraceParser.parse(error.stack)
-        if (stack?.length && stack[0]?.file.includes('public/js/longju/1.0/longju.min.js')) return
+      if (error?.stack?.includes('longju') && isIgnoredError(error.stack, 'longju.min.js', 4, 158931)) {
+        console.log('ignore longju error')
+        return
       }
       for (let i = 0; i < ignoredErrors.length; i++) {
         if (message.indexOf(ignoredErrors[i]) === 0) {

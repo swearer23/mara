@@ -14,6 +14,7 @@ export default class Storage {
       this.env = env
       this.version = version
       this.userid = null
+      this.cop = false
       this.#startPolling()
       Storage.instance = this
     }
@@ -36,8 +37,15 @@ export default class Storage {
     return tempLines
   }
 
+  #setCOP () {
+    this.cop = true
+    setTimeout(() => {
+      this.cop = false
+    }, 10000)
+  }
+
   #send2Server () {
-    if (!this.userid) return
+    if (!this.userid || this.cop) return
     const lines = this.#readLines()
     if (lines.length) {
       const path = 'api/mara/report'
@@ -51,6 +59,7 @@ export default class Storage {
       })
       axios(config).catch(err => {
         this.__pool__ = lines.concat(this.__pool__)
+        this.#setCOP()
       })
     }
   }
