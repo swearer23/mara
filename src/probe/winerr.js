@@ -49,7 +49,7 @@ class VueErrorCollector {
         originErrorHandler && originErrorHandler(err, vm, info)
       }
       console.error(err)
-      this.onErrorDetected(info, '', '', '', err, null, 'VUE_ERROR')
+      this.onErrorDetected(info, '', '', '', err, 'VUE_ERROR')
     }
     vue.config.errorHandler = maraVueErrorHandler
   }
