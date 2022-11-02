@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>T.E.S.T</title>
+    <script src="https://s1.longfor.com/public/js/axios.min.js" crossorigin="anonymous"></script>
+    <script src="https://s.longfor.com/public/js/vconsole/vconsole.min.js"></script>
+    <script>
+      // VConsole will be exported to `window.VConsole` by default.
+      // var vConsole = new window.VConsole();
+    </script>
+    <style>
+      html,
+      body {
+        font-size: 14px;
+      }
+
+      .btn {
+        width: 150px;
+        height: 30px;
+        line-height: 30px;
+        background-color: #ff0000;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 15px;
+        margin: 50px auto;
+        text-align: center;
+      }
+
+      .title {
+        text-align: center;
+        margin: 0 auto;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <h3 class="title">csijs前端日志系统，VUE2测试网页地址</h3>
+    <div id="app">
+    </div>
+  </body>
+  <!-- <script src="../dist/mara.umd.js"></script> -->
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    import app from './demoVue2.vue'
+    import Mara from "../src/index.js";
+    
+    const mara = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
+      env: 'uat'
+    });
+
+    mara.setUser('demoUser')
+
+    createApp(app).mount('#app')
+
+    // window.onload = () => {
+    //   // axios.defaults.withCredentials = true;
+    //   const csi = 
+    //   const btnError = document.getElementById('btn-error');
+    //   const btnRequest = document.getElementById('btn-request');
+    //   const btnSetUser = document.getElementById('btn-set-user');
+    //   const btnCustomMsg = document.getElementById('btn-custom-msg');
+    //   btnError.addEventListener('click', () => {
+    //     longju(123);
+    //   });
+
+    //   btnRequest.addEventListener('click', () => {
+    //     (new Promise((resolve, reject) => {
+    //       axios.get('https://s1.longfor.com/public/js/axios.min.js').then(res => {
+    //         resolve(res);
+    //       });
+    //     })).then(res => {test(123)})
+    //     new Promise((resolve, reject) => {
+    //       axios({
+    //         method: 'post',
+    //         url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
+    //         headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
+    //         withCredentials: true,
+    //         data: {
+    //           guid: '1C256D51-8B5C-4339-A1A0-0B5B2B40B9DA'
+    //         }
+    //       }).then(res => {
+    //         console.log(res);
+    //       }).catch(err => {
+    //         reject('出错了')
+    //       })
+    //     })
+        
+    //     axios.get('https://api-uat.longfor.com/julianos-uat/', {
+    //       headers: {'X-Gaia-Api-Key': '791f6690-0714-445f-9273-78a3199622d2'},
+    //     }).then(res => {
+    //       err()
+    //     })
+    //   })
+
+    //   btnSetUser.addEventListener('click', () => {
+    //     csi.setUser('demoUser')
+    //   })
+
+    //   btnCustomMsg.addEventListener('click', () => {
+    //     csi.probe('hello world', 'the result of XXX is', 23, {a: 1, b: 2, c: {d: 3, e: 5}}, {f: 6, g: 7})
+    //   })
+
+    //   performance.mark('settimeoutstart')
+    //   setTimeout(() => {
+    //     performance.mark('settimeoutend')
+    //     performance.measure(
+    //       'mysettimeout',
+    //       'settimeoutstart',
+    //       'settimeoutend'
+    //     )
+    //   }, 2000)
+
+    //   const createAndAppendElement = (tagName, parent) => {
+    //     if (!parent) {
+    //         parent = document.body;
+    //     }
+    //     const element = document.createElement(tagName);
+    //     parent.appendChild(element);
+    //     return element;
+    //   };
+
+    //   const t1 = createAndAppendElement("div");
+
+    //   const observer = new ResizeObserver((entries) => {
+    //       console.log("callback", entries.length);
+
+    //       t1.style.width = "101px";
+    //   });
+
+    //   observer.observe(t1);
+    // }
+
+    // setTimeout(() => {
+    //   window.crossoriginscripterror()
+    // }, 5000)
+
+    // const oError = window.console.error
+    // window.console.error = function () {
+    //   console.debug(arguments)
+    //   oError.apply(window.console, arguments)
+    // }
+    
+  </script>
+</html>

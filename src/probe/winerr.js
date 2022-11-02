@@ -22,10 +22,68 @@ const isIgnoredError = (stackString, filename, line, col) => {
   return true
 }
 
+class VueErrorCollector {
+  constructor(onErrorDetected) {
+    this.onErrorDetected = onErrorDetected
+    this.tryToDetect()
+  }
+
+  async tryToDetect() {
+    let count = 5,
+        vue
+    while(count > 0) {
+      vue = this.detect()
+      if (vue) {
+        this.setErrorHandler(vue)
+      } else {
+        count--
+      }
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+  }
+
+  setErrorHandler (vue) {
+    const originErrorHandler = vue.config.errorHandler
+    const maraVueErrorHandler = (err, vm, info) => {
+      if (originErrorHandler && originErrorHandler.name !== 'maraVueErrorHandler') {
+        originErrorHandler && originErrorHandler(err, vm, info)
+      }
+      console.error(err)
+      this.onErrorDetected(info, '', '', '', err, null, 'VUE_ERROR')
+    }
+    vue.config.errorHandler = maraVueErrorHandler
+  }
+
+  detect() {
+    const all = document.querySelectorAll('*')
+    let el
+    for (let i = 0; i < all.length; i++) {
+      if (all[i].__vue__) {
+        el = all[i]
+        break
+      }
+    }
+    if (el) {
+      let Vue = Object.getPrototypeOf(el.__vue__).constructor
+      while (Vue.super) {
+        Vue = Vue.super
+      }
+      return Vue
+    }
+    return false
+  }
+
+}
+
 class WinErr {
   constructor (storage) {
     this.storage = storage
+    new VueErrorCollector(this.onErrorDetected.bind(this))
     this.probe()
+  }
+
+  onErrorDetected() {
+    this.pushLine.apply(this, arguments)
   }
 
   probe () {
@@ -58,16 +116,16 @@ class WinErr {
       if (reason instanceof Error) {
         this.pushLine(reason.message, reason.fileName, reason.lineNumber, reason.columnNumber, reason);
       } else if (typeof reason === 'string') {
-        this.pushLine(`Uncaught (in promise): ${reason}`, '', '', '');
+        this.pushLine(`Uncaught (in promise): ${reason}`, '', '', '', null, 'JS_WARN');
       } else if (typeof reason === 'object') {
-        this.pushLine(`Uncaught (in promise): ${tryStringify(reason)}`, '', '', '');
+        this.pushLine(`Uncaught (in promise): ${tryStringify(reason)}`, '', '', '', null, 'JS_WARN');
       }
     })
   }
 
-  pushLine (message, url, line, char, err) {
+  pushLine (message, url, line, char, err, etype='JS_ERROR') {
     this.storage.addLine({
-      etype: 'JS_ERROR',
+      etype,
       message: `${message} \n ${err && err.stack}`,
       js: `${url}:${line}:${char}`,
     });

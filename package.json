@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
   "directories": {
@@ -9,6 +9,7 @@
   "scripts": {
     "start": "DEBUG=true rollup -c -w",
     "dev": "vite --port 8888 --host 0.0.0.0",
+    "dev:vue3": "vite --port 8888 --host 0.0.0.0 -c vite-vue3.config.js",
     "release": "node scripts/release.mjs",
     "build": "rm -rf ./dist && rollup -c",
     "lint": "eslint ./src",
@@ -41,6 +42,8 @@
     "@rollup/plugin-commonjs": "^18.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
+    "@vitejs/plugin-vue": "^3.2.0",
+    "@vitejs/plugin-vue2": "^2.0.0",
     "babel-jest": "^28.1.3",
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",
