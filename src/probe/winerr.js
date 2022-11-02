@@ -35,6 +35,7 @@ class VueErrorCollector {
       vue = this.detect()
       if (vue) {
         this.setErrorHandler(vue)
+        break
       } else {
         count--
       }
