@@ -50,7 +50,9 @@ class Mara {
     autoTraceId = false,
     traceIdKey = 'x-mara-trace-id',
     sessionIdKey = 'x-mara-session-id',
-    excludeAjaxURL = []
+    excludeAjaxURL = [],
+    vueVM = null,
+    appVersion = null
   }) {
     if (needFakeInit()) {
       console.warn('need fake mara instance')
@@ -64,6 +66,8 @@ class Mara {
     this.appname = appname
     this.appid = appid
     this.env = env
+    this.vueVM = vueVM
+    this.appVersion = appVersion
     this.autoTraceId = autoTraceId
     if (this.autoTraceId) {
       this.traceIdKey = traceIdKey
@@ -89,9 +93,14 @@ class Mara {
   }
 
   #init() {
-    this.storage = new Storage(this.appname, this.appid, this.sessionId, this.env, this.version)
+    this.storage = new Storage(this.appname, this.appid, {
+      sessionId: this.sessionId,
+      env: this.env,
+      appVersion: this.appVersion,
+      maraVersion: this.version
+    })
     this.performance = new performance(this.storage, this.env)
-    new WinErr(this.storage)
+    new WinErr(this.storage, this.vueVM)
     new AjaxErr(this.storage, {
       autoTraceId: this.autoTraceId,
       traceIdKey: this.traceIdKey,

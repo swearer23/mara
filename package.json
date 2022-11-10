@@ -1,6 +1,6 @@
 {
   "name": "@longfor/mara",
-  "version": "2.1.7",
+  "version": "2.1.9",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
   "directories": {
@@ -42,7 +42,7 @@
     "@rollup/plugin-commonjs": "^18.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
-    "@vitejs/plugin-vue2": "^2.0.0",
+    "@vitejs/plugin-vue2": "^2.0.1",
     "babel-jest": "^28.1.3",
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",

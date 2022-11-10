@@ -52,11 +52,12 @@
     import Mara from "../src/index.js";
     
     const mara = new Mara('mara', 'e1cd416bc6d0a5c1b99de7c0f6bb1cc2', {
-      env: 'uat'
+      env: 'uat',
+      appVersion: '1.0.0',
+      vueVM: Vue
     });
 
     mara.setUser('demoUser')
-
     new Vue({
       render: h => h(app)
     }).$mount('#app')

@@ -12,6 +12,9 @@ export default {
       list: null// '[1,2,3]'
     }
   },
+  mounted () {
+    throw new Error('我是错误')
+  },
   methods: {
     makeError() {
       test()

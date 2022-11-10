@@ -23,9 +23,13 @@ const isIgnoredError = (stackString, filename, line, col) => {
 }
 
 class VueErrorCollector {
-  constructor(onErrorDetected) {
+  constructor(onErrorDetected, vueVM) {
     this.onErrorDetected = onErrorDetected
-    this.tryToDetect()
+    if (vueVM) {
+      this.setErrorHandler(vueVM)
+    } else {
+      this.tryToDetect()
+    }
   }
 
   async tryToDetect() {
@@ -39,7 +43,7 @@ class VueErrorCollector {
       } else {
         count--
       }
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 50))
     }
   }
 
@@ -77,9 +81,9 @@ class VueErrorCollector {
 }
 
 class WinErr {
-  constructor (storage) {
+  constructor (storage, vueVM) {
     this.storage = storage
-    new VueErrorCollector(this.onErrorDetected.bind(this))
+    new VueErrorCollector(this.onErrorDetected.bind(this), vueVM)
     this.probe()
   }
 
