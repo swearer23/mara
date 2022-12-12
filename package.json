@@ -3,6 +3,11 @@
   "version": "2.1.9",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
+  "exports": {
+    ".": "./dist/mara.umd.js",
+    "./nodejs": "./dist/mara.node.umd.js",
+    "./ems": "./dist/mara.esm.js"
+  },
   "directories": {
     "test": "test"
   },
@@ -40,6 +45,7 @@
     "@playwright/test": "^1.24.1",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^18.1.0",
+    "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
     "@vitejs/plugin-vue2": "^2.0.1",
