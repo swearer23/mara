@@ -1,4 +1,5 @@
 import MD5 from 'crypto-js/md5'
+import { REPORT_HOST, REPORT_PORT } from '../../config';
 
 export const ts2slug = timestamp => {
   const currSegmentsValidChar = seg => (seg >= 65 && seg < 91) || (seg >= 97 && seg < 123)
@@ -34,19 +35,9 @@ export const sign = (appid, timestamp) => {
   return MD5(`${appid}${timestamp}`).toString();
 }
 
-export const getAxiosConfig = (env, method, path, data, app) => {
-  let host, gaiaKey
-  if (env === 'prod') {
-    host = 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/'
-    gaiaKey = 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'
-  } else {
-    host = '//api-uat.longfor.com/julianos-uat/'
-    // host = '//localhost:6006/'
-    gaiaKey = '791f6690-0714-445f-9273-78a3199622d2'
-  }
-  const headers = {
-    'X-Gaia-Api-Key': gaiaKey
-  }
+export const getAxiosConfig = (method, path, data, app) => {
+  const headers = {}
+  const host = `//${REPORT_HOST}:${REPORT_PORT}/`
   const timestamp = new Date().getTime()
   const slug = ts2slug(timestamp)
   const signature = sign(app.appid, timestamp)

@@ -91,7 +91,7 @@ export default class NodeMara {
   #report (log) {
     const path = 'api/mara/report'
     const data = Object.assign({}, this.#getLogTemplate(), log)
-    const config = getAxiosConfig(this.env, 'post', path, [data], {
+    const config = getAxiosConfig('post', path, [data], {
       appname: this.appname,
       appid: this.appid
     })

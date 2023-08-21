@@ -59,7 +59,7 @@ export default class Storage {
         line.user = this.userid
         return line
       })
-      const config = getAxiosConfig(this.env, 'post', path, data, {
+      const config = getAxiosConfig('post', path, data, {
         appname: this.appname,
         appid: this.appid
       })

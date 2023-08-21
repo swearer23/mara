@@ -87,9 +87,6 @@ class Mara {
     if (!appid) {
       throw Error('appid 必传')
     }
-    if (!['uat', 'prod'].includes(env)) {
-      throw Error('env 必传，可选值：uat | prod')
-    }
   }
 
   #init() {
