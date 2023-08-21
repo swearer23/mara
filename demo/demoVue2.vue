@@ -21,14 +21,14 @@ export default {
     },
     sendRequest() {
       (new Promise((resolve, reject) => {
-        axios.get('https://s1.longfor.com/public/js/axios.min.js').then(res => {
+        axios.get('https://s1.loooooooooong.com/public/js/axios.min.js').then(res => {
           resolve(res);
         });
       })).then(res => {test(123)})
       new Promise((resolve, reject) => {
         axios({
           method: 'post',
-          url: 'https://m7-hlgw-c1-openapi.longfor.com/julianos-prod/api/admin/snapshot/make/url',
+          url: 'https://m7-hlgw-c1-openapi.loooooooong.com/julianos-prod/api/admin/snapshot/make/url',
           headers: {'X-Gaia-Api-Key': 'a2e33eb4-6516-43f9-bcc0-9c47b0f123b3'},
           withCredentials: true,
           data: {
@@ -41,7 +41,7 @@ export default {
         })
       })
       
-      axios.get('https://api-uat.longfor.com/julianos-uat/', {
+      axios.get('https://api-uat.loooooooong.com/julianos-uat/', {
         headers: {'X-Gaia-Api-Key': '791f6690-0714-445f-9273-78a3199622d2'},
       }).then(res => {
         err()

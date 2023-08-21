@@ -55,7 +55,7 @@
     import Mara from "/src/index.js";
     window.onload = () => {
       // axios.defaults.withCredentials = true;
-      const csi = new Mara('mara', 'e0cd416bc6d0a5c1b99de7c0f6bb1cc2', {
+      const mara = new Mara('mara', 'e0cd416bc6d0a5c1b99de7c0f6bb1cc2', {
         // autoTraceId: true,
         // sessionIdKey: 'davinci-request-id',
         // traceIdKey: 'davinci-trace-id',
@@ -98,11 +98,11 @@
       })
 
       btnSetUser.addEventListener('click', () => {
-        csi.setUser('demoUser')
+        mara.setUser('demoUser')
       })
 
       btnCustomMsg.addEventListener('click', () => {
-        csi.probe('hello world', 'the result of XXX is', 23, {a: 1, b: 2, c: {d: 3, e: 5}}, {f: 6, g: 7})
+        mara.probe('hello world', 'the result of XXX is', 23, {a: 1, b: 2, c: {d: 3, e: 5}}, {f: 6, g: 7})
       })
 
       performance.mark('settimeoutstart')

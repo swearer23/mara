@@ -1,5 +1,5 @@
 {
-  "name": "@longfor/mara",
+  "name": "mara",
   "version": "2.2.0-alpha",
   "description": "mara是一个前端日志系统, 它将错误信息上报至ES存储",
   "main": "./dist/mara.umd.js",
