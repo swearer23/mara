@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://raw.githubusercontent.com/swearer23/mara/master/images/logo.png?raw=true" alt="logo" />
+<img src="https://github.com/swearer23/mara/blob/59c26f886be207478be70905e5b8548d332d69e5/images/logo.jpg" alt="logo" />
 </p>
 
 # Frontend Error Logger with Node.js Server
@@ -50,4 +50,4 @@ Mara is designed to help frontend developers collect and manage error logs gener
 BY clicking around the page, you can generate exceptions and see them in the console. The exceptions will be sent to the server and stored in Elasticsearch.
 (You will need to have Elasticsearch installed and running on your machine for this to work.)
 
-<img src="https://raw.githubusercontent.com/swearer23/mara/master/images/demo.png?raw=true" alt="logo" />
+<img src="https://github.com/swearer23/mara/blob/59c26f886be207478be70905e5b8548d332d69e5/images/demo.png" alt="logo" />
